@@ -1,0 +1,70 @@
+1 - TOPUP App
+Public
+GET   /topup/fields/<product_slug>/
+POST  /topup/validate/
+Admin
+GET    /admin/topup/games/
+POST   /admin/topup/games/
+POST   /admin/topup/fields/
+PUT    /admin/topup/fields/<id>/
+DELETE /admin/topup/fields/<id>/
+POST   /admin/topup/packages/
+PUT    /admin/topup/packages/<id>/
+DELETE /admin/topup/packages/<id>/
+---------------------------------------
+2 - CART App
+User
+GET    /cart/
+POST   /cart/items/
+PUT    /cart/items/<item_id>/
+DELETE /cart/items/<item_id>/
+Internal
+POST /cart/validate/
+---------------------------------------
+3 - COUPONS App
+Public
+POST /coupons/apply/
+DELETE /coupons/remove/
+Admin
+GET    /admin/coupons/
+POST   /admin/coupons/
+PUT    /admin/coupons/<id>/
+DELETE /admin/coupons/<id>/
+---------------------------------------
+4 - ORDERS App
+Public
+POST /orders/
+GET  /orders/
+GET  /orders/<order_id>/
+Admin
+GET /admin/orders/
+PUT /admin/orders/<order_id>/status/
+---------------------------------------
+5 - PAYMENTS App
+Public
+POST /payments/init/
+GET  /payments/status/<order_id>/
+Webhooks
+POST /payments/webhook/
+---------------------------------------
+6 - NOTIFICATIONS App
+Public
+GET /notifications/
+PUT /notifications/<id>/read/
+Internal
+POST /notifications/send/
+---------------------------------------
+7 - REVIEWS App
+Public
+POST /reviews/
+GET  /products/<slug>/reviews/
+Admin
+GET /admin/reviews/
+PUT /admin/reviews/<id>/approve/
+---------------------------------------
+8 - DASHBOARD App
+Admin
+GET /dashboard/overview/
+GET /dashboard/sales/
+GET /dashboard/products/
+---------------------------------------

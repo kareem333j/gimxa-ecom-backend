@@ -1,0 +1,334 @@
+openapi: 3.0.3
+info:
+  title: Deals4Gamer API
+  version: 1.0.0
+  description: Authentication & User Management API
+paths:
+  /api/v1/auth/change-password/:
+    put:
+      operationId: v1_auth_change_password_update
+      description: Change password for authenticated user
+      summary: Change password
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+        required: true
+      responses:
+        '200':
+          description: Password changed successfully
+        '400':
+          description: Validation error
+        '401':
+          description: Unauthorized
+  /api/v1/auth/csrf-token/:
+    get:
+      operationId: v1_auth_csrf_token_retrieve
+      description: Return a CSRF token and set csrftoken cookie (for browser clients).
+      summary: Get CSRF token
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          description: CSRF token returned
+  /api/v1/auth/forgot-password/:
+    post:
+      operationId: v1_auth_forgot_password_create
+      description: Send password reset link to email
+      summary: Forgot password
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user@example.com
+              required:
+              - email
+      security:
+      - {}
+      responses:
+        '200':
+          description: Reset link sent if email exists
+        '429':
+          description: Too many requests
+  /api/v1/auth/login/:
+    post:
+      operationId: v1_auth_login_create
+      description: Authenticate user using email and password
+      summary: Login user
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user@example.com
+                password:
+                  type: string
+                  example: P@ssw0rd
+              required:
+              - email
+              - password
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPublic'
+          description: Login successful
+        '401':
+          description: Invalid credentials
+        '403':
+          description: Account disabled or not verified
+        '429':
+          description: Too many attempts / locked
+  /api/v1/auth/logout/:
+    post:
+      operationId: v1_auth_logout_create
+      description: Logout and blacklist refresh token (if present)
+      summary: Logout user
+      tags:
+      - v1
+      responses:
+        '200':
+          description: Logout successful
+        '401':
+          description: Unauthorized
+  /api/v1/auth/refresh/:
+    post:
+      operationId: v1_auth_refresh_create
+      description: Rotate refresh token and return new access (and refresh if rotated).
+        Refresh token is expected in HttpOnly cookie.
+      summary: Refresh access token
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          description: Access token refreshed successfully
+        '400':
+          description: Refresh token not provided
+        '401':
+          description: Invalid or expired refresh token
+  /api/v1/auth/register/:
+    post:
+      operationId: v1_auth_register_create
+      description: Create a new user account and send OTP to email
+      summary: Register new user
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '201':
+          description: User registered successfully
+        '400':
+          description: Validation error
+        '429':
+          description: Rate limit exceeded
+  /api/v1/auth/reset-password/{uidb64}/{token}/:
+    get:
+      operationId: v1_auth_reset_password_retrieve
+      description: Validate password reset token (GET) and reset password (POST).
+      summary: Validate reset token
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: uidb64
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          description: Password reset link is valid
+        '400':
+          description: Invalid or expired token
+    post:
+      operationId: v1_auth_reset_password_create
+      description: Validate password reset token (GET) and reset password (POST).
+      summary: Validate reset token
+      parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: uidb64
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - {}
+      responses:
+        '200':
+          description: Password reset link is valid
+        '400':
+          description: Invalid or expired token
+  /api/v1/auth/verify-email-otp/:
+    post:
+      operationId: v1_auth_verify_email_otp_create
+      description: Verify account by providing email and OTP code
+      summary: Verify email with OTP
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                otp:
+                  type: string
+              required:
+              - email
+              - otp
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPublic'
+          description: Account verified successfully
+        '400':
+          description: Invalid or expired OTP / validation error
+        '404':
+          description: User not found
+        '429':
+          description: Rate limit exceeded
+components:
+  schemas:
+    ChangePasswordRequest:
+      type: object
+      properties:
+        old_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        new_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        confirm_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - confirm_password
+      - new_password
+      - old_password
+    RegisterRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        username:
+          type: string
+          minLength: 1
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 128
+        confirm_password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        full_name:
+          type: string
+          nullable: true
+          maxLength: 300
+      required:
+      - confirm_password
+      - email
+      - password
+      - username
+    RoleEnum:
+      enum:
+      - user
+      - admin
+      - seller
+      - developer
+      type: string
+      description: |-
+        * `user` - User
+        * `admin` - Admin
+        * `seller` - Seller
+        * `developer` - Developer
+    UserPublic:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        username:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        full_name:
+          type: string
+          nullable: true
+          maxLength: 300
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+      required:
+      - email
+      - id
+      - username

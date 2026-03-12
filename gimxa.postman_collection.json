@@ -1,0 +1,3381 @@
+{
+  "info": {
+    "_postman_id": "c13942d4-ac94-4978-bac4-a68e01e687a3",
+    "name": "Deals4gamer",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "47132428",
+    "_collection_link": "https://go.postman.co/collection/47132428-c13942d4-ac94-4978-bac4-a68e01e687a3?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "end points",
+      "item": [
+        {
+          "name": "auth",
+          "item": [
+            {
+              "name": "register",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"kareem147j@gmail.com\",\r\n    \"username\": \"kareem123\",\r\n    \"password\":\"kareem999jj\",\r\n    \"confirm_password\":\"kareem999jj\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{url}}/auth/register/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "verify-email",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\":\"kareem147j@gmail.com\",\r\n    \"otp\": 345629\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{url}}/auth/verify-email-otp/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "verify-email-otp",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "resend-otp",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\":\"kareem147j@gmail.com\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{url}}/auth/resend-email-otp/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "resend-email-otp",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "login",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"karim@admin.com\",\r\n    \"password\": \"admin\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{url}}/auth/login/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "logout",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"karem147j@gmail.com\",\r\n    \"username\": \"kareem123\",\r\n    \"password\":\"kareem999jj\",\r\n    \"confirm_password\":\"kareem999jj\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{url}}/auth/logout/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "logout",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "test-user-is-authenticated",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"kareem147j@gmail.com\",\r\n    \"username\": \"kareem123\",\r\n    \"password\":\"kareem999jj\",\r\n    \"confirm_password\":\"kareem999jj\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{url}}/auth/test/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "test",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "refresh",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{url}}/auth/refresh/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "refresh",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "change-password",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"old_password\":\"kareem999jjj\",\r\n    \"new_password\":\"kareem999jj\",\r\n    \"confirm_password\":\"kareem999jj\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{url}}/auth/change-password/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "change-password",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "forgot-password",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"kareem147j@gmail.com\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{url}}/auth/forgot-password/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "forgot-password",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "check-password-reset-link",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{url}}/auth/reset-password/NzVkNDUzZjYtNGI1Zi00NjU2LWFhOGYtYTZjMzQ1NmNiODY2/d2z8hm-4748b7ed52f6de078d3bf34607951ac3/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "reset-password",
+                    "NzVkNDUzZjYtNGI1Zi00NjU2LWFhOGYtYTZjMzQ1NmNiODY2",
+                    "d2z8hm-4748b7ed52f6de078d3bf34607951ac3",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "reset-password",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{url}}/auth/reset-password/NzVkNDUzZjYtNGI1Zi00NjU2LWFhOGYtYTZjMzQ1NmNiODY2/d2z8hm-4748b7ed52f6de078d3bf34607951ac3/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "reset-password",
+                    "NzVkNDUzZjYtNGI1Zi00NjU2LWFhOGYtYTZjMzQ1NmNiODY2",
+                    "d2z8hm-4748b7ed52f6de078d3bf34607951ac3",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "google-oauth2",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"karim@admin.com\",\r\n    \"password\": \"admin\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{url}}/auth/o2/google/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "o2",
+                    "google",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "users",
+          "item": [
+            {
+              "name": "public",
+              "item": [
+                {
+                  "name": "get-user",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/users/user/d3aa98f5-d4b8-4d5b-a224-840e71c7c9ff/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "users",
+                        "user",
+                        "d3aa98f5-d4b8-4d5b-a224-840e71c7c9ff",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "get-my-profile",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/users/user/my/profile",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "users",
+                        "user",
+                        "my",
+                        "profile"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "get-user-profile",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/users/user/d3aa98f5-d4b8-4d5b-a224-840e71c7c9ff/profile",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "users",
+                        "user",
+                        "d3aa98f5-d4b8-4d5b-a224-840e71c7c9ff",
+                        "profile"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "get-activity-log",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/users/user/d3aa98f5-d4b8-4d5b-a224-840e71c7c9ff/logs?page_size=5",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "users",
+                        "user",
+                        "d3aa98f5-d4b8-4d5b-a224-840e71c7c9ff",
+                        "logs"
+                      ],
+                      "query": [
+                        {
+                          "key": "page_size",
+                          "value": "5",
+                          "description": "default=24"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "update-profile",
+                  "request": {
+                    "method": "PATCH",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"full_name\": \"karim magdy\",\r\n    \"profile\": {\r\n        \"support_email\": \"karim@admin.com\",\r\n        \"support_whatsapp\": \"+201023681084\"\r\n    },\r\n    \"settings\":{\r\n        \"mode\": \"light\",\r\n        \"language_preference\": \"ar\"\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/users/user/my/profile/update/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "users",
+                        "user",
+                        "my",
+                        "profile",
+                        "update",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "admin",
+              "item": [
+                {
+                  "name": "users-list",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"full_name\": \"karim magdy\",\r\n    \"profile\": {\r\n        \"support_email\": \"karim@admin.com\",\r\n        \"support_whatsapp\": \"+201023681084\"\r\n    },\r\n    \"settings\":{\r\n        \"mode\": \"light\",\r\n        \"language_preference\": \"ar\"\r\n    }\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/users/admin/users?page_size=3&page=1&filter=is_active=true,is_verified=true&search=kare",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "users",
+                        "admin",
+                        "users"
+                      ],
+                      "query": [
+                        {
+                          "key": "page_size",
+                          "value": "3",
+                          "description": "set any page size you want from 1 to 40 row"
+                        },
+                        {
+                          "key": "page",
+                          "value": "1",
+                          "description": "set page number from pages paginated"
+                        },
+                        {
+                          "key": "filter",
+                          "value": "is_active=true,is_verified=true",
+                          "description": "you can filter with : [\"role\", \"is_active\", \"provider\", \"is_verified\"]"
+                        },
+                        {
+                          "key": "search",
+                          "value": "kare",
+                          "description": "you can search with : [\"username\",\"email\",\"full_name\",\"id\"]"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "add-user",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"email\":\"ahmed@gmail.com\",\r\n    \"username\":\"ahmed238\",\r\n    \"password\":\"kareem999jj\",\r\n    \"confirm_password\":\"kareem999jj\",\r\n    \"full_name\":\"ahmed ali\", // (optional)\r\n    \"role\":\"user\", // (optional) default = user\r\n    \"is_verified\":true, // (optional) default = false\r\n    \"avatar\":7 // (optional) default = nul\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/users/admin/users/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "users",
+                        "admin",
+                        "users",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "update-user-data",
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"profile\": {\r\n        \"phone\": \"0101010101010\",\r\n        \"country\": \"egypt\",\r\n        \"city\": \"mansoura, egypt\"\r\n    }\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/users/user/f68dbbf9-1f70-4d47-96f7-11c2f5629e3c/profile/update/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "users",
+                        "user",
+                        "f68dbbf9-1f70-4d47-96f7-11c2f5629e3c",
+                        "profile",
+                        "update",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "delete-user",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "global-search",
+          "item": [
+            {
+              "name": "simple-search-interface",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{url}}/catalog/public/search/simple?search=pub",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "catalog",
+                    "public",
+                    "search",
+                    "simple"
+                  ],
+                  "query": [
+                    {
+                      "key": "search",
+                      "value": "pub"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "search-results-with-advanced-filters",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{url}}/catalog/public/search/advanced?search=mobile&categories=topup&tags=fight,war&is_popular=true&is_available=true&topups=true",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "catalog",
+                    "public",
+                    "search",
+                    "advanced"
+                  ],
+                  "query": [
+                    {
+                      "key": "search",
+                      "value": "mobile"
+                    },
+                    {
+                      "key": "categories",
+                      "value": "topup"
+                    },
+                    {
+                      "key": "tags",
+                      "value": "fight,war"
+                    },
+                    {
+                      "key": "is_popular",
+                      "value": "true"
+                    },
+                    {
+                      "key": "is_available",
+                      "value": "true"
+                    },
+                    {
+                      "key": "topups",
+                      "value": "true"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "dashboard",
+          "item": [
+            {
+              "name": "create-porduct-with-create-all-related-objects-of-product-form-data",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "PUBG Mobile",
+                      "type": "text",
+                      "uuid": "36a69ac4-c0ab-4f50-8740-f46e048a0267"
+                    },
+                    {
+                      "key": "product_type",
+                      "value": "topup",
+                      "type": "text",
+                      "uuid": "899c4cda-e87d-4504-9912-47e2d155338e"
+                    },
+                    {
+                      "key": "images[0][image]",
+                      "type": "file",
+                      "uuid": "4287c86b-22e1-419e-a663-6483dc26e14f",
+                      "src": "/C:/Users/DELL/Downloads/gamixa project images/images.jpg"
+                    },
+                    {
+                      "key": "images[0][is_main]",
+                      "value": "true",
+                      "type": "text",
+                      "uuid": "c9ddf127-e4e4-4dda-9866-ef58fdbe48a1"
+                    },
+                    {
+                      "key": "logo",
+                      "type": "file",
+                      "uuid": "9cf89ff3-be2d-4f95-8fcb-73eaa9adbeab",
+                      "src": "/C:/Users/DELL/Downloads/gamixa project images/pubg-logo.jpg"
+                    },
+                    {
+                      "key": "stock_mode",
+                      "value": "automatic",
+                      "type": "text",
+                      "uuid": "53ea9c41-925b-4896-ac20-04d429a23634"
+                    },
+                    {
+                      "key": "manual_fulfillment_time",
+                      "value": "0",
+                      "type": "text",
+                      "uuid": "283a88b2-5e3b-4a2b-a989-d2383866ebf8"
+                    },
+                    {
+                      "key": "category",
+                      "value": "1",
+                      "type": "text",
+                      "uuid": "9ceb82ae-b0b4-483f-8b51-514c8b7cc68c"
+                    },
+                    {
+                      "key": "tags",
+                      "value": "1",
+                      "type": "text",
+                      "uuid": "566b17bf-4049-4de3-833b-5a9395afcce6"
+                    },
+                    {
+                      "key": "tags",
+                      "value": "2",
+                      "type": "text",
+                      "uuid": "2eb4d59f-6e17-4cf6-9715-e3b5f2512e5b"
+                    },
+                    {
+                      "key": "fields[0][title]",
+                      "value": "Player ID",
+                      "type": "text",
+                      "uuid": "d07893c4-6a54-4b0c-b0bd-9d855019f6ad"
+                    },
+                    {
+                      "key": "fields[0][key]",
+                      "value": "player_id",
+                      "type": "text",
+                      "uuid": "b3c3728d-c08a-4b31-bbf7-14745adea25d"
+                    },
+                    {
+                      "key": "fields[0][field_type]",
+                      "value": "number",
+                      "type": "text",
+                      "uuid": "9c3f7fbe-0234-4adc-890a-985a731baa2a"
+                    },
+                    {
+                      "key": "fields[0][is_required]",
+                      "value": "true",
+                      "type": "text",
+                      "uuid": "5a571142-3caa-45db-9ee4-aed5f816b70d"
+                    },
+                    {
+                      "key": "fields[0][helps][0][description]",
+                      "value": "put your pubg player id",
+                      "type": "text",
+                      "uuid": "10fe2953-e6db-49eb-b947-45642df7bba3"
+                    },
+                    {
+                      "key": "fields[0][helps][1][description]",
+                      "value": "open your profile in pubg and get it",
+                      "type": "text",
+                      "uuid": "143793fe-963b-4f19-9112-27cde5713813"
+                    },
+                    {
+                      "key": "packages[0][name]",
+                      "value": "60 UC",
+                      "type": "text",
+                      "uuid": "650751b2-f8dc-4fdd-bf23-75801bb4ca1e"
+                    },
+                    {
+                      "key": "packages[0][amount]",
+                      "value": "60",
+                      "type": "text",
+                      "uuid": "ce4ec1d2-3c93-4656-8f58-98e014535b81"
+                    },
+                    {
+                      "key": "packages[0][price]",
+                      "value": "1.00",
+                      "type": "text",
+                      "uuid": "e1511a88-596f-4a8e-aacf-f7dbb54e2249"
+                    },
+                    {
+                      "key": "packages[0][stock_mode]",
+                      "value": "automatic",
+                      "type": "text",
+                      "uuid": "829ee597-3b57-4c0b-8519-862888a98592"
+                    },
+                    {
+                      "key": "packages[0][manual_fulfillment_time]",
+                      "value": "0",
+                      "type": "text",
+                      "uuid": "c723dd97-5bf0-4be1-9207-b6bbf66bdea3"
+                    },
+                    {
+                      "key": "packages[0][codes]",
+                      "value": "[\"pubg123\",\"pubg456\",\"pubg789\"]",
+                      "type": "text",
+                      "uuid": "0a71b754-ae29-42c6-972e-69cb36604d75"
+                    },
+                    {
+                      "key": "packages[1][name]",
+                      "value": "120 UC",
+                      "type": "text",
+                      "uuid": "ee82b952-583b-4bf4-8506-9f5d5528d6e9"
+                    },
+                    {
+                      "key": "packages[1][amount]",
+                      "value": "120",
+                      "type": "text",
+                      "uuid": "df533189-8c9c-4d30-b513-d29ac5a90db9"
+                    },
+                    {
+                      "key": "packages[1][price]",
+                      "value": "8.00",
+                      "type": "text",
+                      "uuid": "399135de-41cd-4d99-8e05-8ee7a2624ec0"
+                    },
+                    {
+                      "key": "packages[1][stock_mode]",
+                      "value": "automatic",
+                      "type": "text",
+                      "uuid": "ad674b45-e842-42af-8ccc-f9bb7f4cd0a9"
+                    },
+                    {
+                      "key": "packages[1][manual_fulfillment_time]",
+                      "value": "0",
+                      "type": "text",
+                      "uuid": "05ae69c5-a10f-4a6c-8b1f-20c569d07f15"
+                    },
+                    {
+                      "key": "packages[1][codes]",
+                      "value": "[\"pubg000\",\"pubg001\",\"pubg002\"]",
+                      "type": "text",
+                      "uuid": "6ea590d8-1a6c-4ce0-a72e-e3e4124feefc"
+                    },
+                    {
+                      "key": "attributes[0][name]",
+                      "value": "Region",
+                      "type": "text",
+                      "uuid": "e067ebde-3576-4dc3-b973-b2be11fec963"
+                    },
+                    {
+                      "key": "attributes[0][value]",
+                      "value": "Global",
+                      "type": "text",
+                      "uuid": "f7bd645f-c56d-4ab4-9121-80034c88600e"
+                    },
+                    {
+                      "key": "images[1][image]",
+                      "type": "file",
+                      "uuid": "0d4c2ffe-7b80-4a19-99a2-62f0e7743097",
+                      "src": "/C:/Users/DELL/Downloads/gamixa project images/PUBGM.jpg"
+                    },
+                    {
+                      "key": "images[2][image]",
+                      "type": "file",
+                      "uuid": "645bbdb5-6d71-4683-a863-7cd5886aa6c8",
+                      "src": "/C:/Users/DELL/Downloads/gamixa project images/6bnnkdxR3GZTf4NGDDfUYP.jpg"
+                    },
+                    {
+                      "key": "fields[0][helps][0][image]",
+                      "type": "file",
+                      "uuid": "19ece06a-3c5f-4406-a21f-307957ab5010",
+                      "src": "/C:/Users/DELL/Downloads/gamixa project images/pubg id.jpg"
+                    },
+                    {
+                      "key": "packages[0][image]",
+                      "type": "file",
+                      "uuid": "f90015e8-e938-418d-a749-2aacc71eaf2a",
+                      "src": "/C:/Users/DELL/Downloads/gamixa project images/uc.png"
+                    },
+                    {
+                      "key": "packages[1][image]",
+                      "type": "file",
+                      "uuid": "2d43ddcb-8794-419b-9482-3bb9b70e32fd",
+                      "src": "/C:/Users/DELL/Downloads/gamixa project images/uc.png"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{url}}/dashboard/admin/products/create/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "admin",
+                    "products",
+                    "create",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "create-porduct-with-create-all-related-objects-of-product-json",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"PUBG Mobile\",\r\n    \"product_type\": \"topup\",\r\n    \"stock_mode\": \"automatic\",\r\n    \"manual_fulfillment_time\": 0, // zero if stock_mode = \"automatic\"\r\n    \"category\": [2],\r\n    \"tags\":[1,2],\r\n    \"fields\": [\r\n        {\r\n            \"title\": \"Player ID\",\r\n            \"key\": \"player_id\",\r\n            \"field_type\": \"number\",\r\n            \"is_required\": true,\r\n            \"helps\":[\r\n                {\r\n                    \"description\":\"put your pubg player id\"\r\n                },\r\n                {\r\n                    \"description\":\"open your profile in pubg and get it\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"packages\": [\r\n        {\r\n            \"name\": \"60 UC\",\r\n            \"amount\": \"60\",\r\n            \"price\": \"1.00\",\r\n            \"stock_mode\": \"automatic\",\r\n            \"manual_fulfillment_time\": 0,\r\n            \"codes\":[\"pubg789\",\"pubg123\",\"pubg456\"]\r\n        },\r\n        {\r\n            \"name\": \"120 UC\",\r\n            \"amount\": \"120\",\r\n            \"price\": \"8.00\",\r\n            \"stock_mode\": \"automatic\",\r\n            \"manual_fulfillment_time\": 0,\r\n            \"codes\":[\"pubg000\",\"pubg001\",\"pubg002\"]\r\n        }\r\n    ],\r\n    \"attributes\":[\r\n        {\r\n            \"name\":\"Region\",\r\n            \"value\":\"Global\"\r\n        }\r\n    ]\r\n}"
+                },
+                "url": {
+                  "raw": "{{url}}/dashboard/admin/products/create/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "admin",
+                    "products",
+                    "create",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update-product-with-related-objects",
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "images[0][id]",
+                      "value": "20",
+                      "type": "text",
+                      "uuid": "1ee277b2-e327-4cce-84e5-1faa45cd0120"
+                    },
+                    {
+                      "key": "images[0][image]",
+                      "type": "file",
+                      "uuid": "fefb1a3b-32f5-444a-939f-0c9bb21ac465",
+                      "src": "/C:/Users/DELL/Downloads/gamixa project images/PUBGMobile_Article_HowToInstallandPlay_AR1.jpg"
+                    },
+                    {
+                      "key": "images[0][is_main]",
+                      "value": "true",
+                      "type": "text",
+                      "uuid": "790ce45c-71d5-494c-b755-6e0448acafab"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{url}}/dashboard/admin/products/pubg-mobile/full-update/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "dashboard",
+                    "admin",
+                    "products",
+                    "pubg-mobile",
+                    "full-update",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "catalog",
+          "item": [
+            {
+              "name": "admin",
+              "item": [
+                {
+                  "name": "categories-list",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/catalog/admin/categories/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "catalog",
+                        "admin",
+                        "categories",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "update-category",
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"is_active\":true\r\n    // if you want to update image send it in form-data format not json\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/catalog/admin/categories/topup/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "catalog",
+                        "admin",
+                        "categories",
+                        "topup",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "add-category",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"name\":\"software\",\r\n    \"parent\": 1, // (optional) if category child of another category\r\n    \"level\": 1 // (optional) if you want to arrenge \r\n    // \"image\": ... // if you want to upload image send request data in form-data formate\r\n    // \"logo\": ... // if you want to upload image send request data in form-data formate \r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/catalog/admin/categories/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "catalog",
+                        "admin",
+                        "categories",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "delete-category",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"slug\":\"software-1\"\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/catalog/admin/categories/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "catalog",
+                        "admin",
+                        "categories",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "add-product",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"name\":\"windows 11 pro\",\r\n    //\"slug\":\"\" // (optional) if you want to set uniqe slug\r\n    \"product_type\": \"software\",\r\n    \"price\": 15.55, // set price if product not have topup packages\r\n    \"is_active\": false, // (optional) default true\r\n    \"is_available\":false, // (optional) default true\r\n    // \"is_popular\": false // (optional) default true\r\n    \"stock_mode\": \"manual\", // automatic or manual\r\n    \"description\":\"\", // (optional)\r\n    \"short_description\":\"\" // optional)\r\n    // \"image\": ... // if you want to upload image send request data in form-data formate\r\n    // \"logo\": ... // if you want to upload image send request data in form-data formate \r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/catalog/admin/products/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "catalog",
+                        "admin",
+                        "products",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "products-list",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/catalog/admin/products?search=w",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "catalog",
+                        "admin",
+                        "products"
+                      ],
+                      "query": [
+                        {
+                          "key": "search",
+                          "value": "w"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "update-product",
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"is_active\":true,\r\n    \"tags\":[1,2]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/catalog/admin/products/mobile-legends/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "catalog",
+                        "admin",
+                        "products",
+                        "mobile-legends",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "get-product",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/catalog/admin/products/pubg-mobile",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "catalog",
+                        "admin",
+                        "products",
+                        "pubg-mobile"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "delete-product",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/catalog/admin/products/windows-11-pro-1/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "catalog",
+                        "admin",
+                        "products",
+                        "windows-11-pro-1",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "tags-list",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": ""
+                    },
+                    "url": {
+                      "raw": "{{url}}/catalog/admin/tags",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "catalog",
+                        "admin",
+                        "tags"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "add-tag",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": ""
+                    },
+                    "url": {
+                      "raw": "{{url}}/catalog/admin/tags/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "catalog",
+                        "admin",
+                        "tags",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "public",
+              "item": [
+                {
+                  "name": "categories-list-view",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"email\": \"karim@admin.com\",\r\n    \"password\": \"admin\"\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/catalog/public/categories/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "catalog",
+                        "public",
+                        "categories",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "tag-list-view",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/catalog/public/tags/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "catalog",
+                        "public",
+                        "tags",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "products-list-view",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/catalog/public/products",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "catalog",
+                        "public",
+                        "products"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "product-detail-view",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/catalog/public/products/mobile-legendes/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "catalog",
+                        "public",
+                        "products",
+                        "mobile-legendes",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "tags-list",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/catalog/public/tags",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "catalog",
+                        "public",
+                        "tags"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "topup",
+          "item": [
+            {
+              "name": "admin",
+              "item": [
+                {
+                  "name": "topup-list",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/topup/admin/topups?search=mobile",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "topup",
+                        "admin",
+                        "topups"
+                      ],
+                      "query": [
+                        {
+                          "key": "search",
+                          "value": "mobile",
+                          "description": "you can search with product name"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "delete-topup",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": ""
+                    },
+                    "url": {
+                      "raw": "{{url}}/topup/admin/topups/windows-11-pro/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "topup",
+                        "admin",
+                        "topups",
+                        "windows-11-pro",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "add-topup",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"product\":2 // set product id you want to make it topup\r\n    // \"is_active\": false // (optional) default true\r\n    // \"logo\": ... // if you want to upload image send request data in form-data format\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/topup/admin/topups/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "topup",
+                        "admin",
+                        "topups",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "add-field",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "[\r\n  {\r\n    \"title\": \"Player ID\",\r\n    \"field_type\": \"text\",\r\n    \"placeholder\":\"Enter your player id\",\r\n    \"game\": 1,\r\n    \"key\":\"player_id\"\r\n  },\r\n  {\r\n    \"title\": \"Area\",\r\n    \"field_type\": \"number\",\r\n    \"placeholder\":\"Enter your area zone\",\r\n    \"game\": 1,\r\n    \"key\":\"area_zone\"\r\n  }\r\n]"
+                    },
+                    "url": {
+                      "raw": "{{url}}/topup/admin/fields/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "topup",
+                        "admin",
+                        "fields",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "update-field",
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"is_required\":true,\r\n    \"min_input_length\":4\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/topup/admin/fields/5/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "topup",
+                        "admin",
+                        "fields",
+                        "5",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "delete-field",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "[\r\n  {\r\n    \"name\": \"Player ID\",\r\n    \"field_type\": \"text\",\r\n    \"placeholder\":\"Enter your player id\",\r\n    \"game\": 1,\r\n    \"key\":\"player_id\"\r\n  },\r\n  {\r\n    \"name\": \"Area\",\r\n    \"field_type\": \"number\",\r\n    \"placeholder\":\"Enter your area zone\",\r\n    \"game\": 1,\r\n    \"key\":\"area_zone\"\r\n  }\r\n]"
+                    },
+                    "url": {
+                      "raw": "{{url}}/topup/admin/fields/2/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "topup",
+                        "admin",
+                        "fields",
+                        "2",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "delete-multiple-fields",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "[3,4]"
+                    },
+                    "url": {
+                      "raw": "{{url}}/topup/admin/fields/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "topup",
+                        "admin",
+                        "fields",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "add-field-help",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"field\":5,\r\n    \"description\":\"to get your player id follow this steps\\n 1-open the game\\n 2-open your profile\\n ....\"\r\n    // if you want to add image send it in form-data format not json\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/topup/admin/fields/helps/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "topup",
+                        "admin",
+                        "fields",
+                        "helps",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "update-field-help",
+                  "request": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"field\":6,\r\n    \"description\":\"to get your player id follow this steps\\n 1-open the game\\n 2-open your profile\\n .........\"\r\n    // if you want to update image send it in form-data format not json\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/topup/admin/fields/helps/3/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "topup",
+                        "admin",
+                        "fields",
+                        "helps",
+                        "3",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "delete-field-help",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"field\":6,\r\n    \"description\":\"to get your player id follow this steps\\n 1-open the game\\n 2-open your profile\\n .........\"\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/topup/admin/fields/helps/6/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "topup",
+                        "admin",
+                        "fields",
+                        "helps",
+                        "6",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "topup-detail",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": ""
+                    },
+                    "url": {
+                      "raw": "{{url}}/topup/admin/topups/mobile-legends",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "topup",
+                        "admin",
+                        "topups",
+                        "mobile-legends"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "add-package",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"name\":\"1 500 + 300 UC\",\r\n    \"amount\":\"1 500 + 300 UC\",\r\n    \"price\": 22.85,\r\n    \"stock_mode\":\"automatic\",\r\n    //\"manual_fulfillment_time\": 0 // set it if stock_mode = manual\r\n    \"game\":1\r\n    // \"order\":1 // (optional) default 0\r\n    // \"is_active\": true // (optional) default true\r\n    // \"is_popular\": false // (optional) default true\r\n    // \"image\": ... // if you want to upload image send request data in form-data format you can't send it in json format only form-data\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/topup/admin/packages/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "topup",
+                        "admin",
+                        "packages",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "package-list",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/topup/admin/topups/mobile-legends/packages?ordering=-price&page_size=3&page=1",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "topup",
+                        "admin",
+                        "topups",
+                        "mobile-legends",
+                        "packages"
+                      ],
+                      "query": [
+                        {
+                          "key": "ordering",
+                          "value": "-price"
+                        },
+                        {
+                          "key": "page_size",
+                          "value": "3"
+                        },
+                        {
+                          "key": "page",
+                          "value": "1"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "update-package",
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"is_popular\":true\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/topup/admin/packages/3/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "topup",
+                        "admin",
+                        "packages",
+                        "3",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "public",
+              "item": [
+                {
+                  "name": "topup-list",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": ""
+                    },
+                    "url": {
+                      "raw": "{{url}}/topup/public/topups?search=mobile",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "topup",
+                        "public",
+                        "topups"
+                      ],
+                      "query": [
+                        {
+                          "key": "search",
+                          "value": "mobile",
+                          "description": "you can search with product name"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "topup-detail",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": ""
+                    },
+                    "url": {
+                      "raw": "{{url}}/topup/public/topups/pubg-mobile",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "topup",
+                        "public",
+                        "topups",
+                        "pubg-mobile"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "package-list",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/topup/public/topups/mobile-legends/packages?ordering=-is_popular&page_size=2&page=2",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "topup",
+                        "public",
+                        "topups",
+                        "mobile-legends",
+                        "packages"
+                      ],
+                      "query": [
+                        {
+                          "key": "ordering",
+                          "value": "-is_popular"
+                        },
+                        {
+                          "key": "page_size",
+                          "value": "2"
+                        },
+                        {
+                          "key": "page",
+                          "value": "2"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "validate-topup-fields-from-user",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"product_slug\":\"mobile-legends\",\r\n    \"data\": {\r\n        \"player_id\":\"4\",\r\n        \"area_zone\":1\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/topup/public/validate/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "topup",
+                        "public",
+                        "validate",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "cart",
+          "item": [
+            {
+              "name": "cart-detail",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{url}}/cart/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "cart",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "add-to-cart",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"product_slug\":\"mobile-legends\",\r\n    \"quantity\":250, // optional -> default = 1\r\n    \"topup_package_id\":1, // if topup else not add this\r\n    \"topup_data\":{ // if topup else not add this\r\n        \"player_id\":\"789879\",\r\n        \"area_zone\":\"5\"\r\n    }\r\n}"
+                },
+                "url": {
+                  "raw": "{{url}}/cart/items/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "cart",
+                    "items",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "clear-cart",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{url}}/cart/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "cart",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update-cart",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"product_slug\": \"mobile-legends\",\r\n  \"topup_package_id\": 1,\r\n  \"topup_data\": {\r\n    \"player_id\": \"77777\",\r\n    \"area_zone\": \"5\"\r\n  },\r\n  //\"quantity_delta\": -15,\r\n  \"quantity\": 0\r\n}"
+                },
+                "url": {
+                  "raw": "{{url}}/cart/items/update/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "cart",
+                    "items",
+                    "update",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete-item",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"product_slug\": \"mobile-legends\",\r\n  \"topup_package_id\": 1, // if topup else not add this\r\n  \"topup_data\": { // if topup else not add this\r\n    \"player_id\": \"77777\",\r\n    \"area_zone\": \"5\"\r\n  }\r\n}"
+                },
+                "url": {
+                  "raw": "{{url}}/cart/items/delete/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "cart",
+                    "items",
+                    "delete",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "coupons",
+          "item": [
+            {
+              "name": "public",
+              "item": [
+                {
+                  "name": "coupon-detail",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"code\":\"karim00000\"\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/coupons/karim00000/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "coupons",
+                        "karim00000",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "validate-coupon",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"code\":\"karim00000\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/coupons/validate/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "coupons",
+                        "validate",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "apply-coupon-on-cart",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"code\":\"karim00011\"\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/coupons/apply/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "coupons",
+                        "apply",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "remove-coupon",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"code\":\"karim00000\"\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/coupons/remove/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "coupons",
+                        "remove",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "admin",
+              "item": [
+                {
+                  "name": "coupons-list",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/coupons/admin/all/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "coupons",
+                        "admin",
+                        "all",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "add-coupon",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"code\": \"karim00011\",\r\n    \"scope\": \"package\",  // global(order), product, package, category  **NOTE: if you add product or category or package to coupone you must not select global\r\n    \"discount_type\": \"percent\", // (fixed, percent)  you must select discount type if global\r\n    \"discount_value\": 5,\r\n    \"start_at\": \"2026-03-01T00:00:00Z\", // YYYY-MM-DDTHH:MM:SSZ   OR   YYYY-MM-DDTHH:MM:SS+03:00\r\n    \"end_at\":   \"2026-03-31T23:59:59Z\",  // // YYYY-MM-DDTHH:MM:SSZ   OR   YYYY-MM-DDTHH:MM:SS+03:00\r\n    \"is_active\": true, // optional default is true\r\n    \"max_usage\": 50     // optional\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/coupons/admin/all/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "coupons",
+                        "admin",
+                        "all",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "update-coupon",
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"discount_type\":\"fixed\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/coupons/admin/coupon/4/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "coupons",
+                        "admin",
+                        "coupon",
+                        "4",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "coupon-detail",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/coupons/admin/coupon/4/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "coupons",
+                        "admin",
+                        "coupon",
+                        "4",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "add-products-to-coupon",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"product\":2,\r\n    \"discount_type\":\"percent\", // (fixed, percent)\r\n    \"discount_value\": 10\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/coupons/admin/coupon/1/products/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "coupons",
+                        "admin",
+                        "coupon",
+                        "1",
+                        "products",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "delete-product-from-coupon",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": ""
+                    },
+                    "url": {
+                      "raw": "{{url}}/coupons/admin/coupon/1/products/2/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "coupons",
+                        "admin",
+                        "coupon",
+                        "1",
+                        "products",
+                        "2",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "add-category-to-coupon",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n   \"category\":1,\r\n   \"discount_type\": \"fixed\",\r\n   \"discount_value\": 20\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/coupons/admin/coupon/3/categories/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "coupons",
+                        "admin",
+                        "coupon",
+                        "3",
+                        "categories",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "delete-category-from-coupon",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/coupons/admin/coupon/1/categories/1/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "coupons",
+                        "admin",
+                        "coupon",
+                        "1",
+                        "categories",
+                        "1",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "add-package-to-coupon",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n   \"package\":1,\r\n   \"discount_type\": \"percent\",\r\n   \"discount_value\": 16\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/coupons/admin/coupon/4/packages/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "coupons",
+                        "admin",
+                        "coupon",
+                        "4",
+                        "packages",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "delete-package-from-coupon",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/coupons/admin/coupon/4/packages/1/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "coupons",
+                        "admin",
+                        "coupon",
+                        "4",
+                        "packages",
+                        "1",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "coupon-usages",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": ""
+                    },
+                    "url": {
+                      "raw": "{{url}}/coupons/admin/coupon/1/usages/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "coupons",
+                        "admin",
+                        "coupon",
+                        "1",
+                        "usages",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "notifications",
+          "item": [
+            {
+              "name": "public",
+              "item": [
+                {
+                  "name": "notifications-list",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/notifications/all/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "notifications",
+                        "all",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "notification-detail",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/notifications/notification/870ff105-f89a-4f77-a525-b4ba6d828a70/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "notifications",
+                        "notification",
+                        "870ff105-f89a-4f77-a525-b4ba6d828a70",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "delete-notification",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/notifications/notification/870ff105-f89a-4f77-a525-b4ba6d828a70/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "notifications",
+                        "notification",
+                        "870ff105-f89a-4f77-a525-b4ba6d828a70",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "delete-all-my-notification",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/notifications/all/delete/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "notifications",
+                        "all",
+                        "delete",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "admin",
+              "item": [
+                {
+                  "name": "send-notification-to-user",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "// {\r\n//     \"user\":\"d3aa98f5-d4b8-4d5b-a224-840e71c7c9ff\",\r\n//     \"subject\":\"Your UC has sent success\",\r\n//     \"message\":\"Congrate, We sent your UC to your pubg mobile account\",\r\n//     \"email_type\":\"credits_delivered\"\r\n// }\r\n\r\n{\r\n    \"user\":\"d3aa98f5-d4b8-4d5b-a224-840e71c7c9ff\",\r\n    \"code\":\"d3aa98f5-d4b8-4d5b-a224-840e71c7c9ff\",\r\n    \"subject\":\"Your Credit Code\",\r\n    \"message\":\"Your Code Is\",\r\n    \"email_type\":\"code_sent\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/notifications/admin/all/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "notifications",
+                        "admin",
+                        "all",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "notification-list",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/notifications/admin/all?filter=user=dc6153e6-4343-4d52-ad4b-958c2dfcea0e,is_read=false&search=karim",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "notifications",
+                        "admin",
+                        "all"
+                      ],
+                      "query": [
+                        {
+                          "key": "filter",
+                          "value": "user=dc6153e6-4343-4d52-ad4b-958c2dfcea0e,is_read=false",
+                          "description": "ALLOWED_FILTERS = {\"user\", \"is_read\", \"is_deleted\", \"is_active\", \"is_emailed\", \"created_at\", \"updated_at\", \"emailed_at\", \"readed_at\"}"
+                        },
+                        {
+                          "key": "search",
+                          "value": "karim",
+                          "description": "search_with : (username, full_name, email, subject, message, email_type)"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "notification-detail",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/notifications/admin/notification/9ca1a8bd-5e72-47f4-b81c-4471d045d701/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "notifications",
+                        "admin",
+                        "notification",
+                        "9ca1a8bd-5e72-47f4-b81c-4471d045d701",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "delete-notification",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/notifications/admin/notification/9ca1a8bd-5e72-47f4-b81c-4471d045d701/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "notifications",
+                        "admin",
+                        "notification",
+                        "9ca1a8bd-5e72-47f4-b81c-4471d045d701",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "orders",
+          "item": [
+            {
+              "name": "public",
+              "item": [
+                {
+                  "name": "orders-list",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/orders/all?filter=status=pending",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "orders",
+                        "all"
+                      ],
+                      "query": [
+                        {
+                          "key": "filter",
+                          "value": "status=pending",
+                          "description": "choices [paid, pending, completed, processing, cancelled]"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "order-detail",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/orders/order/a2bda791-885c-4361-bd4e-a814d9f9a449",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "orders",
+                        "order",
+                        "a2bda791-885c-4361-bd4e-a814d9f9a449"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "cancel-order",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": ""
+                    },
+                    "url": {
+                      "raw": "{{url}}/orders/order/17398226-d3b4-4dab-847d-ef6ed791b439/cancel/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "orders",
+                        "order",
+                        "17398226-d3b4-4dab-847d-ef6ed791b439",
+                        "cancel",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "checkout",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/orders/checkout/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "orders",
+                        "checkout",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "buy-now",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "// // if non topup product\r\n// {\r\n//     \"product_slug\":\"windows-11-pro\",\r\n//     \"quantity\":8 // default = 1\r\n//     // \"coupon_code\": \"\"  // optional\r\n// }\r\n// // if topup\r\n{\r\n    \"product_slug\":\"mobile-legends\",\r\n    \"quantity\":8 ,// default = 1\r\n    \"topup_package_id\": 1,\r\n    \"topup_data\":{ // data fields of topup\r\n        \"player_id\":564879, // field 1\r\n        \"area_zone\": 79878  // field 2\r\n    }\r\n    // \"coupon_code\": \"\"  // optional\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/orders/buy-now/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "orders",
+                        "buy-now",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "admin",
+              "item": [
+                {
+                  "name": "orders-list",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/orders/admin/all?filter=status=pending&search=karim",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "orders",
+                        "admin",
+                        "all"
+                      ],
+                      "query": [
+                        {
+                          "key": "filter",
+                          "value": "status=pending",
+                          "description": "you can filter with [\"status\", \"user\", \"total_price\", \"created_at\", \"subtotal\", \"discount_total\", \"coupon_code\"]"
+                        },
+                        {
+                          "key": "search",
+                          "value": "karim",
+                          "description": "you can search with (full_name or username or email) of users"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "order-details",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/orders/admin/a2bda791-885c-4361-bd4e-a814d9f9a449",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "orders",
+                        "admin",
+                        "a2bda791-885c-4361-bd4e-a814d9f9a449"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "update-order",
+                  "request": {
+                    "method": "PATCH",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"status\":\"processing\",  // pending, paid, failed, completed, processing, cancelled\r\n    \"send_notification\": true, // (optional) default = false\r\n    \"notification_data\": { // required if send_notification = true\r\n        \"subject\":\"Your order is processing\",\r\n        \"message\":\"Your order is processing now, if order status is changed we will message you\",\r\n        \"email_type\": \"default\"\r\n    }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/orders/admin/dcdae1ea-c167-4107-b0ad-50c95e813492/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "orders",
+                        "admin",
+                        "dcdae1ea-c167-4107-b0ad-50c95e813492",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "delete-order",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": ""
+                    },
+                    "url": {
+                      "raw": "{{url}}/orders/admin/a2bda791-885c-4361-bd4e-a814d9f9a449/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "orders",
+                        "admin",
+                        "a2bda791-885c-4361-bd4e-a814d9f9a449",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "codes",
+          "item": [
+            {
+              "name": "add-update-delete-codes",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    //\"package_id\":1, // send package_id if topup product\r\n    \"codes\":\"4587887\\n0000000\\n7981777\" // get or send it from html textarea\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{url}}/codes/admin/product/windows-11-pro/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "codes",
+                    "admin",
+                    "product",
+                    "windows-11-pro",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "code-list-to-spesific-product",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"package_id\":1\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{url}}/codes/admin/product/windows-11-pro/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "codes",
+                    "admin",
+                    "product",
+                    "windows-11-pro",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "code-list-to-spesific-product-package",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{url}}/codes/admin/product/mobile-legends?package_id=1",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "codes",
+                    "admin",
+                    "product",
+                    "mobile-legends"
+                  ],
+                  "query": [
+                    {
+                      "key": "package_id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "code-list-all",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{url}}/codes/admin/all/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "codes",
+                    "admin",
+                    "all",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update-single-code",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"code\":\"kkkkkkk\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{url}}/codes/admin/product/windows-11-pro/40/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "codes",
+                    "admin",
+                    "product",
+                    "windows-11-pro",
+                    "40",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete-single-code",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{url}}/codes/admin/product/mobile-legends/2/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "codes",
+                    "admin",
+                    "product",
+                    "mobile-legends",
+                    "2",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "cache",
+          "item": [
+            {
+              "name": "clear-cache",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{url}}/auth/clear-cache/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "clear-cache",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "url",
+      "value": "http://127.0.0.1:8000/api/v1"
+    }
+  ]
+}
