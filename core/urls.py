@@ -30,6 +30,7 @@ urlpatterns = [
     path('api/v1/dashboard/', include('dashboard.urls')),
     path('api/v1/orders/', include('orders.urls')),
     path('api/v1/dashboard/', include('dashboard.urls')),
+    path('api/v1/payments/', include('payments.urls')),
     path('api/auth', include("rest_framework.urls")),
     
     # OpenAPI Schema

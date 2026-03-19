@@ -34,13 +34,16 @@ def get_product_list_cache_page_key(
     page_size,
     filter_params=None,
     search_query=None,
-    is_admin=False
+    is_admin=False,
+    extra=None
 ):
     key = f"{PRODUCT_LIST_CACHE_PAGE_KEY_PREFIX if not is_admin else PRODUCT_ADMIN_LIST_CACHE_PAGE_KEY_PREFIX}{page_number}_size_{page_size}"
     if filter_params:
         key += f"_filter_{filter_params}"
     if search_query:
         key += f"_search_{search_query}"
+    if extra:
+        key += f"_{extra}"
     return key
 
 def get_product_cache_key(slug):
@@ -60,12 +63,18 @@ def get_topup_game_list_public_cache_key():
 def get_topup_game_list_search_cache_key(
     page_number,
     page_size,
+    filter_params=None,
     search_query=None,
-    is_admin=False
+    is_admin=False,
+    extra=None
 ):
     key = f"{TOPUP_GAME_LIST_PUBLIC_CACHE_KEY_PREFIX if not is_admin else TOPUP_GAME_LIST_ADMIN_CACHE_KEY_PREFIX}{page_number}_size_{page_size}"
+    if filter_params:
+        key += f"_filter_{filter_params}"
     if search_query:
         key += f"_search_{search_query}"
+    if extra:
+        key += f"_{extra}"
     return key
 
 def get_topup_game_list_admin_cache_key():

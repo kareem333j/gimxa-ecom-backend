@@ -43,6 +43,35 @@
               "response": []
             },
             {
+              "name": "login",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"karim@admin.com\",\r\n    \"password\": \"admin\"\r\n}"
+                },
+                "url": {
+                  "raw": "{{url}}/auth/login/",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
               "name": "verify-email",
               "request": {
                 "method": "POST",
@@ -92,35 +121,6 @@
                   "path": [
                     "auth",
                     "resend-email-otp",
-                    ""
-                  ]
-                }
-              },
-              "response": []
-            },
-            {
-              "name": "login",
-              "request": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json",
-                    "type": "text"
-                  }
-                ],
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\r\n    \"email\": \"karim@admin.com\",\r\n    \"password\": \"admin\"\r\n}"
-                },
-                "url": {
-                  "raw": "{{url}}/auth/login/",
-                  "host": [
-                    "{{url}}"
-                  ],
-                  "path": [
-                    "auth",
-                    "login",
                     ""
                   ]
                 }
@@ -671,7 +671,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{url}}/catalog/public/search/advanced?search=mobile&categories=topup&tags=fight,war&is_popular=true&is_available=true&topups=true",
+                  "raw": "{{url}}/catalog/public/search/advanced?search=mobile&categories=topup&tags=fight,war&is_popular=true&is_available=true&topups=true&price_min=1&price_max=10&ordering=-price",
                   "host": [
                     "{{url}}"
                   ],
@@ -684,15 +684,18 @@
                   "query": [
                     {
                       "key": "search",
-                      "value": "mobile"
+                      "value": "mobile",
+                      "description": "search product name"
                     },
                     {
                       "key": "categories",
-                      "value": "topup"
+                      "value": "topup",
+                      "description": "categories_slug list "
                     },
                     {
                       "key": "tags",
-                      "value": "fight,war"
+                      "value": "fight,war",
+                      "description": "tags_slug list "
                     },
                     {
                       "key": "is_popular",
@@ -705,6 +708,22 @@
                     {
                       "key": "topups",
                       "value": "true"
+                    },
+                    {
+                      "key": "price_min",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "price_max",
+                      "value": "10",
+                      "type": "text"
+                    },
+                    {
+                      "key": "ordering",
+                      "value": "-price",
+                      "description": "value can be -> price or -price",
+                      "type": "text"
                     }
                   ]
                 }
@@ -971,7 +990,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"name\": \"PUBG Mobile\",\r\n    \"product_type\": \"topup\",\r\n    \"stock_mode\": \"automatic\",\r\n    \"manual_fulfillment_time\": 0, // zero if stock_mode = \"automatic\"\r\n    \"category\": [2],\r\n    \"tags\":[1,2],\r\n    \"fields\": [\r\n        {\r\n            \"title\": \"Player ID\",\r\n            \"key\": \"player_id\",\r\n            \"field_type\": \"number\",\r\n            \"is_required\": true,\r\n            \"helps\":[\r\n                {\r\n                    \"description\":\"put your pubg player id\"\r\n                },\r\n                {\r\n                    \"description\":\"open your profile in pubg and get it\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"packages\": [\r\n        {\r\n            \"name\": \"60 UC\",\r\n            \"amount\": \"60\",\r\n            \"price\": \"1.00\",\r\n            \"stock_mode\": \"automatic\",\r\n            \"manual_fulfillment_time\": 0,\r\n            \"codes\":[\"pubg789\",\"pubg123\",\"pubg456\"]\r\n        },\r\n        {\r\n            \"name\": \"120 UC\",\r\n            \"amount\": \"120\",\r\n            \"price\": \"8.00\",\r\n            \"stock_mode\": \"automatic\",\r\n            \"manual_fulfillment_time\": 0,\r\n            \"codes\":[\"pubg000\",\"pubg001\",\"pubg002\"]\r\n        }\r\n    ],\r\n    \"attributes\":[\r\n        {\r\n            \"name\":\"Region\",\r\n            \"value\":\"Global\"\r\n        }\r\n    ]\r\n}"
+                  "raw": "{\r\n    \"name\": \"PUBG Mobile\",\r\n    //\"slug\":\"\" // (optional) if you want to set uniqe slug\r\n    \"product_type\": \"topup\",\r\n    \"stock_mode\": \"automatic\",\r\n    \"manual_fulfillment_time\": 0, // zero if stock_mode = \"automatic\"\r\n    // \"is_featured\": false, // (optional) default false\r\n    // \"region\": \"egypt\", // (optional) default \"global\"\r\n    \"is_active\": true, // (optional) default true\r\n    \"is_available\":true, // (optional) default true\r\n    // \"is_popular\": false, // (optional) default false\r\n    \"description\":\"\", // (optional)\r\n    \"short_description\":\"\", // (optional)\r\n    \"category\": [2], // list categories ids\r\n    \"tags\":[1,2], // list tags ids\r\n    \"fields\": [  // list of fields\r\n        {\r\n            \"title\": \"Player ID\",\r\n            \"key\": \"player_id\",\r\n            \"field_type\": \"number\",\r\n            \"is_required\": true,\r\n            \"helps\":[\r\n                {\r\n                    \"description\":\"put your pubg player id\"\r\n                },\r\n                {\r\n                    \"description\":\"open your profile in pubg and get it\"\r\n                }\r\n            ]\r\n        }\r\n    ],\r\n    \"packages\": [  // list of packages\r\n        {\r\n            \"name\": \"60 UC\",\r\n            \"amount\": \"60\",\r\n            \"price\": \"1.00\",\r\n            \"stock_mode\": \"automatic\",\r\n            \"manual_fulfillment_time\": 0,\r\n            \"codes\":[\"pubg789\",\"pubg123\",\"pubg456\"]\r\n        },\r\n        {\r\n            \"name\": \"120 UC\",\r\n            \"amount\": \"120\",\r\n            \"price\": \"8.00\",\r\n            \"stock_mode\": \"automatic\",\r\n            \"manual_fulfillment_time\": 0,\r\n            \"codes\":[\"pubg000\",\"pubg001\",\"pubg002\"]\r\n        }\r\n    ],\r\n    \"attributes\":[ // list of attributes\r\n        {\r\n            \"name\":\"Region\",\r\n            \"value\":\"Global\"\r\n        }\r\n    ]\r\n}"
                 },
                 "url": {
                   "raw": "{{url}}/dashboard/admin/products/create/",
@@ -1159,7 +1178,7 @@
                     "header": [],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"name\":\"windows 11 pro\",\r\n    //\"slug\":\"\" // (optional) if you want to set uniqe slug\r\n    \"product_type\": \"software\",\r\n    \"price\": 15.55, // set price if product not have topup packages\r\n    \"is_active\": false, // (optional) default true\r\n    \"is_available\":false, // (optional) default true\r\n    // \"is_popular\": false // (optional) default true\r\n    \"stock_mode\": \"manual\", // automatic or manual\r\n    \"description\":\"\", // (optional)\r\n    \"short_description\":\"\" // optional)\r\n    // \"image\": ... // if you want to upload image send request data in form-data formate\r\n    // \"logo\": ... // if you want to upload image send request data in form-data formate \r\n}",
+                      "raw": "{\r\n    \"name\":\"windows 11 pro\",\r\n    //\"slug\":\"\" // (optional) if you want to set uniqe slug\r\n    \"product_type\": \"software\",\r\n    \"price\": 15.55, // set price if product not have topup packages\r\n    \"is_active\": false, // (optional) default true\r\n    \"is_available\":false, // (optional) default true\r\n    // \"is_popular\": false, // (optional) default false\r\n    // \"is_featured\": false, // (optional) default false\r\n    // \"region\": \"egypt\", // (optional) default \"global\"\r\n    \"stock_mode\": \"manual\", // automatic or manual\r\n    \"description\":\"\", // (optional)\r\n    \"short_description\":\"\" // (optional)\r\n    // \"image\": ... // if you want to upload image send request data in form-data formate\r\n    // \"logo\": ... // if you want to upload image send request data in form-data formate \r\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -1187,7 +1206,7 @@
                     "method": "GET",
                     "header": [],
                     "url": {
-                      "raw": "{{url}}/catalog/admin/products?search=w",
+                      "raw": "{{url}}/catalog/admin/products?filter=is_featured=false,is_popular=true,tags=1,2,region=global&search=mob&page_size=5&page=1&ordering=-price&price_min=1.1&price_max=15",
                       "host": [
                         "{{url}}"
                       ],
@@ -1198,8 +1217,37 @@
                       ],
                       "query": [
                         {
+                          "key": "filter",
+                          "value": "is_featured=false,is_popular=true,tags=1,2,region=global",
+                          "description": "allowed filter : [is_featured, is_popular, tags(list of tags ids), region, category(list of categories ids), is_available, ,is_topup, is_active]"
+                        },
+                        {
                           "key": "search",
-                          "value": "w"
+                          "value": "mob",
+                          "description": "you can search with: [name, description, short_description, product_type, tags_name, categories_name]"
+                        },
+                        {
+                          "key": "page_size",
+                          "value": "5",
+                          "description": "optional default 10"
+                        },
+                        {
+                          "key": "page",
+                          "value": "1",
+                          "description": "optional default 1"
+                        },
+                        {
+                          "key": "ordering",
+                          "value": "-price",
+                          "description": "value can be -> price or -price"
+                        },
+                        {
+                          "key": "price_min",
+                          "value": "1.1"
+                        },
+                        {
+                          "key": "price_max",
+                          "value": "15"
                         }
                       ]
                     }
@@ -1415,14 +1463,49 @@
                       }
                     },
                     "url": {
-                      "raw": "{{url}}/catalog/public/products",
+                      "raw": "{{url}}/catalog/admin/products?filter=is_featured=false,is_popular=true,tags=1,2,region=global&search=mob&page_size=5&page=1&ordering=-price&price_min=1.1&price_max=15",
                       "host": [
                         "{{url}}"
                       ],
                       "path": [
                         "catalog",
-                        "public",
+                        "admin",
                         "products"
+                      ],
+                      "query": [
+                        {
+                          "key": "filter",
+                          "value": "is_featured=false,is_popular=true,tags=1,2,region=global",
+                          "description": "allowed filter : [is_featured, is_popular, tags(list of tags ids), region, category(list of categories ids), is_available, ,is_topup]"
+                        },
+                        {
+                          "key": "search",
+                          "value": "mob",
+                          "description": "you can search with: [name, description, short_description, product_type, tags_name, categories_name]"
+                        },
+                        {
+                          "key": "page_size",
+                          "value": "5",
+                          "description": "optional default 10"
+                        },
+                        {
+                          "key": "page",
+                          "value": "1",
+                          "description": "optional default 1"
+                        },
+                        {
+                          "key": "ordering",
+                          "value": "-price",
+                          "description": "value can be -> price or -price"
+                        },
+                        {
+                          "key": "price_min",
+                          "value": "1.1"
+                        },
+                        {
+                          "key": "price_max",
+                          "value": "15"
+                        }
                       ]
                     }
                   },
@@ -1484,7 +1567,7 @@
                     "method": "GET",
                     "header": [],
                     "url": {
-                      "raw": "{{url}}/topup/admin/topups?search=mobile",
+                      "raw": "{{url}}/topup/admin/topups?search=mobile&price_min=1.2&ordering=price&price_max=9&filter=is_popular=true,is_featured=false",
                       "host": [
                         "{{url}}"
                       ],
@@ -1498,6 +1581,22 @@
                           "key": "search",
                           "value": "mobile",
                           "description": "you can search with product name"
+                        },
+                        {
+                          "key": "price_min",
+                          "value": "1.2"
+                        },
+                        {
+                          "key": "ordering",
+                          "value": "price"
+                        },
+                        {
+                          "key": "price_max",
+                          "value": "9"
+                        },
+                        {
+                          "key": "filter",
+                          "value": "is_popular=true,is_featured=false"
                         }
                       ]
                     }
@@ -1928,13 +2027,13 @@
                       "raw": ""
                     },
                     "url": {
-                      "raw": "{{url}}/topup/public/topups?search=mobile",
+                      "raw": "{{url}}/topup/admin/topups?search=mobile&price_min=1.2&ordering=price&price_max=9&filter=is_popular=true,is_featured=false",
                       "host": [
                         "{{url}}"
                       ],
                       "path": [
                         "topup",
-                        "public",
+                        "admin",
                         "topups"
                       ],
                       "query": [
@@ -1942,6 +2041,22 @@
                           "key": "search",
                           "value": "mobile",
                           "description": "you can search with product name"
+                        },
+                        {
+                          "key": "price_min",
+                          "value": "1.2"
+                        },
+                        {
+                          "key": "ordering",
+                          "value": "price"
+                        },
+                        {
+                          "key": "price_max",
+                          "value": "9"
+                        },
+                        {
+                          "key": "filter",
+                          "value": "is_popular=true,is_featured=false"
                         }
                       ]
                     }
@@ -2096,7 +2211,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"product_slug\":\"mobile-legends\",\r\n    \"quantity\":250, // optional -> default = 1\r\n    \"topup_package_id\":1, // if topup else not add this\r\n    \"topup_data\":{ // if topup else not add this\r\n        \"player_id\":\"789879\",\r\n        \"area_zone\":\"5\"\r\n    }\r\n}"
+                  "raw": "{\r\n    \"product_slug\":\"mobile-legends\",\r\n    \"quantity\":100, // optional -> default = 1\r\n    \"topup_package_id\":1, // if topup else not add this\r\n    \"topup_data\":{ // if topup else not add this\r\n        \"player_id\":\"789879\",\r\n        \"area_zone\":\"5\"\r\n    }\r\n}"
                 },
                 "url": {
                   "raw": "{{url}}/cart/items/",
@@ -2280,7 +2395,7 @@
                     ],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"code\":\"karim00011\"\r\n}"
+                      "raw": "{\r\n    \"code\":\"karimmagdy150\"\r\n}"
                     },
                     "url": {
                       "raw": "{{url}}/coupons/apply/",
@@ -2904,14 +3019,14 @@
                     "method": "GET",
                     "header": [],
                     "url": {
-                      "raw": "{{url}}/orders/order/a2bda791-885c-4361-bd4e-a814d9f9a449",
+                      "raw": "{{url}}/orders/order/99a79bcf-4787-4370-abe0-d89b0341b17e",
                       "host": [
                         "{{url}}"
                       ],
                       "path": [
                         "orders",
                         "order",
-                        "a2bda791-885c-4361-bd4e-a814d9f9a449"
+                        "99a79bcf-4787-4370-abe0-d89b0341b17e"
                       ]
                     }
                   },
@@ -2949,7 +3064,7 @@
                     "header": [],
                     "body": {
                       "mode": "raw",
-                      "raw": "",
+                      "raw": "{\r\n    \r\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -3344,6 +3459,152 @@
                 }
               },
               "response": []
+            }
+          ]
+        },
+        {
+          "name": "paymob",
+          "item": [
+            {
+              "name": "get-token",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"api_key\":\"ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmpiR0Z6Y3lJNklrMWxjbU5vWVc1MElpd2ljSEp2Wm1sc1pWOXdheUk2TVRBMk1qUTRNU3dpYm1GdFpTSTZJbWx1YVhScFlXd2lmUS5uUXBVLUQxbkFmTE0zcVNqMDFZS1NMMnZpNWtxakl4UUlSdnRxQnNCMmwtOThXSWhTenZyYUlrcWRBR2FjdU5UT21pWU41VUlNTHJkb3RoNXh6aFpqdw==\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://accept.paymob.com/api/auth/tokens",
+                  "protocol": "https",
+                  "host": [
+                    "accept",
+                    "paymob",
+                    "com"
+                  ],
+                  "path": [
+                    "api",
+                    "auth",
+                    "tokens"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "create-order",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Token egy_sk_test_1397ef5c46c8bd8eebb9c3e6b3cdfa9ee75aa631f4c42572c4d92692e0563b8b",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"amount\": 2000,\r\n  \"currency\": \"EGP\",\r\n  \"payment_methods\": [5209340],\r\n  \"items\": [\r\n    {\r\n      \"name\": \"Course\",\r\n      \"amount\": 2000,\r\n      \"description\": \"Course payment\",\r\n      \"quantity\": 1\r\n    }\r\n  ],\r\n  \"billing_data\": {\r\n    \"first_name\": \"Ali\",\r\n    \"last_name\": \"Zain\",\r\n    \"phone_number\": \"+201000000000\",\r\n    \"email\": \"test@test.com\",\r\n    \"country\": \"EG\"\r\n  },\r\n  \"notification_url\": \"https://example.com/paymob/webhook\",\r\n  \"redirection_url\": \"https://example.com/payment/success\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://accept.paymob.com/v1/intention",
+                  "protocol": "https",
+                  "host": [
+                    "accept",
+                    "paymob",
+                    "com"
+                  ],
+                  "path": [
+                    "v1",
+                    "intention"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "payments",
+          "item": [
+            {
+              "name": "public",
+              "item": [
+                {
+                  "name": "payments-gateway-list",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/payments/gateways",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "payments",
+                        "gateways"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "init-payment",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"order_id\":\"99a79bcf-4787-4370-abe0-d89b0341b17e\",\r\n    \"gateway_code\":\"paymob_card\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/payments/init-payment/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "payments",
+                        "init-payment",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "admin",
+              "item": []
             }
           ]
         }

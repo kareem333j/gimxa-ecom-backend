@@ -2,6 +2,8 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 from django.conf import settings
 from django.utils import timezone
+from rest_framework.response import Response
+from rest_framework import status
     
 def send_html_email(subject, to_email, context, email_type="default_notification"):
     template_map = {
@@ -102,3 +104,5 @@ def create_notification(serializer, user, subject, message):
             },
             email_type="credits_delivered",
         )
+    else:
+        raise ValueError("Email type not supported yet")

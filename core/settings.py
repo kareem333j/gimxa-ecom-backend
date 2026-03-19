@@ -10,7 +10,7 @@ SECRET_KEY = 'django-insecure-rx!usebp&ftsad&vl$&q79@t&5j5ss857u+7yh38y=dr5oe+y+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -138,6 +138,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://127.0.0.1:8000",
+    "https://formatively-lictorian-thresa.ngrok-free.dev",
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
@@ -145,6 +146,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://127.0.0.1:8000",
+    "https://formatively-lictorian-thresa.ngrok-free.dev",
 ]
 
 # REST Framework and JWT settings
@@ -244,3 +246,10 @@ CACHES = {
 #         }
 #     }
 # }
+
+
+# Payment secrits
+PAYMOB_API_KEY = "ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmpiR0Z6Y3lJNklrMWxjbU5vWVc1MElpd2ljSEp2Wm1sc1pWOXdheUk2TVRBMk1qUTRNU3dpYm1GdFpTSTZJbWx1YVhScFlXd2lmUS5uUXBVLUQxbkFmTE0zcVNqMDFZS1NMMnZpNWtxakl4UUlSdnRxQnNCMmwtOThXSWhTenZyYUlrcWRBR2FjdU5UT21pWU41VUlNTHJkb3RoNXh6aFpqdw=="
+PAYMOB_SECRET_KEY = "egy_sk_test_1397ef5c46c8bd8eebb9c3e6b3cdfa9ee75aa631f4c42572c4d92692e0563b8b"
+PAYMOB_HMAC = "A5DC479DA965EDF71E4DF6F5F8BB05AB"
+PAYMOB_PUBLIC_KEY = "egy_pk_test_SQ33Z3EoEPsh4R31kELGM14y1ToQrpv1"

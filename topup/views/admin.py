@@ -21,9 +21,11 @@ from cache.utils import (
     get_topup_game_list_public_cache_key,
     get_topup_package_list_cache_page_key,
     get_packages_cache_timeout,
-    get_topup_game_list_search_cache_key
+    get_topup_game_list_search_cache_key,
+    format_filter_value
 )
 from core.pagination import DynamicPageNumberPagination
+from django.db.models import Min
 
 
 
@@ -36,22 +38,49 @@ def delete_all_caches(product_slug):
 class TopUpGameListAdminView(APIView):
     permission_classes = [AdminPermission]
     authentication_classes = [CookieJWTAuthentication]
+    ALLOWED_FILTERS = ["is_popular", "is_featured"]
+    ALLOWED_ORDERING = {"price", "-price"}
 
     def get(self, request):
         page_number = request.query_params.get('page', 1)
         search_query = request.query_params.get('search', None)
-        
+        filter_params = request.query_params.get('filter', None)
+        price_min = request.query_params.get('price_min', None)
+        price_max = request.query_params.get('price_max', None)
+        ordering = request.query_params.get('ordering', None)
+
         paginator = DynamicPageNumberPagination()
         page_size = paginator.get_page_size(request)
+
+        filter_dict = {}
+        if filter_params:
+            for pair in filter_params.split(','):
+                if '=' in pair:
+                    k, v = pair.split('=', 1)
+                    if k in self.ALLOWED_FILTERS:
+                        filter_dict[f'product__{k}'] = format_filter_value(v)
+                    else:
+                        return Response(get_response_schema_1(
+                            message="Invalid filter parameter",
+                            status=400
+                        ), status=400)
+
+        if ordering and ordering not in self.ALLOWED_ORDERING:
+            return Response(get_response_schema_1(
+                message="Invalid ordering. Allowed: price, -price",
+                status=400
+            ), status=400)
 
         cache_key = get_topup_game_list_search_cache_key(
             page_number=page_number,
             page_size=page_size,
             search_query=search_query,
-            is_admin=True
+            filter_params=','.join([f"{k}={v}" for k, v in filter_dict.items()]) if filter_dict else None,
+            is_admin=True,
+            extra=f"pmin={price_min}&pmax={price_max}&ord={ordering}"
         )
         cached_data = cache.get(cache_key)
-        
+
         if cached_data:
             return Response(
                 get_response_schema_1(
@@ -61,11 +90,34 @@ class TopUpGameListAdminView(APIView):
                 ),
                 status=200
             )
-            
-        queryset = TopUpGame.objects.select_related("product").prefetch_related("fields", "packages")
+
+        queryset = TopUpGame.objects.select_related("product").prefetch_related("fields", "packages").annotate(
+            min_pkg_price=Min('packages__price')
+        )
+        if filter_dict:
+            queryset = queryset.filter(**filter_dict)
         if search_query:
             queryset = queryset.filter(product__name__icontains=search_query)
-        
+
+        if price_min:
+            try:
+                queryset = queryset.filter(min_pkg_price__gte=float(price_min))
+            except ValueError:
+                return Response(get_response_schema_1(
+                    message="Invalid price_min value", status=400
+                ), status=400)
+
+        if price_max:
+            try:
+                queryset = queryset.filter(min_pkg_price__lte=float(price_max))
+            except ValueError:
+                return Response(get_response_schema_1(
+                    message="Invalid price_max value", status=400
+                ), status=400)
+
+        if ordering:
+            queryset = queryset.order_by('-min_pkg_price' if ordering == '-price' else 'min_pkg_price')
+
         page = paginator.paginate_queryset(queryset, request)
         serializer = TopUpGameReadOnlyAdminSerializer(page, many=True)
         data = paginator.get_paginated_response(serializer.data).data

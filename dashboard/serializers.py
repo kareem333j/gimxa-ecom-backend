@@ -72,6 +72,7 @@ class _TopUpPackageWriteSerializer(serializers.Serializer):
     amount = serializers.CharField(max_length=100)
     price = serializers.DecimalField(max_digits=15, decimal_places=4)
     image = serializers.ImageField(required=False)
+    region = serializers.CharField(max_length=100)
     is_active = serializers.BooleanField(default=True)
     is_popular = serializers.BooleanField(default=False)
     order = serializers.IntegerField(default=0, min_value=0)
@@ -305,11 +306,13 @@ class ProductCreateSerializer(serializers.Serializer):
     description = serializers.CharField(
         required=False, allow_blank=True, allow_null=True
     )
+    region = serializers.CharField(max_length=100)
     info = serializers.JSONField(required=False, allow_null=True)
     logo = serializers.ImageField(required=False, allow_null=True)
     is_active = serializers.BooleanField(default=True)
     is_available = serializers.BooleanField(default=True)
     is_popular = serializers.BooleanField(default=False)
+    is_featured = serializers.BooleanField(default=False)
 
     # ── Relations ─────────────────────────────────────────────────────────
     category = serializers.PrimaryKeyRelatedField(
@@ -629,9 +632,11 @@ class ProductFullUpdateSerializer(serializers.Serializer):
     )
     info = serializers.JSONField(required=False, allow_null=True)
     logo = serializers.ImageField(required=False, allow_null=True)
+    region = serializers.CharField(max_length=100)
     is_active = serializers.BooleanField(required=False)
     is_available = serializers.BooleanField(required=False)
     is_popular = serializers.BooleanField(required=False)
+    is_featured = serializers.BooleanField(default=False)
 
     category = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(),

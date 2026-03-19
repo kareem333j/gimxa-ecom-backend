@@ -121,6 +121,7 @@ class ProductAttributeSerializer(serializers.ModelSerializer):
 class ProductListSerializer(serializers.ModelSerializer):
     main_image = serializers.SerializerMethodField()
     is_topup = serializers.SerializerMethodField()
+    start_from = serializers.SerializerMethodField()
     tags = TagSerializerPublic(many=True, read_only=True)
     categories = CategoryShortSerializerPublic(source="category", many=True, read_only=True)
 
@@ -140,8 +141,11 @@ class ProductListSerializer(serializers.ModelSerializer):
             "categories",
             "is_available",
             "is_popular",
+            "region",
+            "is_featured",
             "main_image",
             "is_topup",
+            "start_from",
         ]
     
     def get_main_image(self, obj):
@@ -150,6 +154,13 @@ class ProductListSerializer(serializers.ModelSerializer):
 
     def get_is_topup(self, obj):
         return obj.product_type == ProductType.TOPUP
+
+    def get_start_from(self, obj):
+        if obj.product_type == ProductType.TOPUP and hasattr(obj, 'topup'):
+            min_pkg = obj.topup.packages.filter(is_active=True).order_by('price').first()
+            if min_pkg:
+                return str(min_pkg.price)
+        return None
 
 class ProductShortDetailSerializerPublic(serializers.ModelSerializer):
     main_image = serializers.SerializerMethodField()
@@ -170,6 +181,8 @@ class ProductShortDetailSerializerPublic(serializers.ModelSerializer):
             "logo",
             "is_available",
             "is_popular",
+            "is_featured",
+            "region",
             "product_type",
             "tags",
             "categories",
@@ -186,6 +199,7 @@ class ProductDetailSerializerPublic(serializers.ModelSerializer):
     tags = TagSerializerPublic(many=True, read_only=True)
     categories = CategorySerializerPublic(source="category", many=True, read_only=True)
     is_topup = serializers.SerializerMethodField()
+    start_from = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -202,16 +216,26 @@ class ProductDetailSerializerPublic(serializers.ModelSerializer):
             "price",
             "is_available",
             "is_popular",
+            "region",
+            "is_featured",
             "product_type",
             "tags",
             "categories",
             "images",
             "attributes",
             "is_topup",
+            "start_from",
         ]
     
     def get_is_topup(self, obj):
         return obj.product_type == ProductType.TOPUP
+
+    def get_start_from(self, obj):
+        if obj.product_type == ProductType.TOPUP and hasattr(obj, 'topup'):
+            min_pkg = obj.topup.packages.filter(is_active=True).order_by('price').first()
+            if min_pkg:
+                return str(min_pkg.price)
+        return None
 
 class ProductAdminSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
@@ -219,6 +243,7 @@ class ProductAdminSerializer(serializers.ModelSerializer):
     tags = TagSerializerPublic(many=True, read_only=True)
     categories = CategoryShortSerializerPublic(source="category", many=True, read_only=True)
     is_topup = serializers.SerializerMethodField()
+    start_from = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -242,12 +267,22 @@ class ProductAdminSerializer(serializers.ModelSerializer):
             "is_topup",
             "is_active",
             "is_popular",
+            "is_featured",
+            "region",
             "created_at",
             "updated_at",
+            "start_from",
         ]
     
     def get_is_topup(self, obj):
         return obj.product_type == ProductType.TOPUP
+
+    def get_start_from(self, obj):
+        if obj.product_type == ProductType.TOPUP and hasattr(obj, 'topup'):
+            min_pkg = obj.topup.packages.filter(is_active=True).order_by('price').first()
+            if min_pkg:
+                return str(min_pkg.price)
+        return None
 
 class ProductDashboardAdminSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
@@ -280,6 +315,8 @@ class ProductDashboardAdminSerializer(serializers.ModelSerializer):
             "is_topup",
             "is_active",
             "is_popular",
+            "region",
+            "is_featured",
             "fields",
             "packages",
             "created_at",
@@ -320,6 +357,7 @@ class ProductAdminWriteSerializer(serializers.ModelSerializer):
 class ProductListAdminSerializer(serializers.ModelSerializer):
     main_image = serializers.SerializerMethodField()
     is_topup = serializers.SerializerMethodField()
+    start_from = serializers.SerializerMethodField()
     tags = TagSerializerPublic(many=True, read_only=True)
     categories = CategoryShortSerializerPublic(source="category", many=True, read_only=True)
 
@@ -337,6 +375,8 @@ class ProductListAdminSerializer(serializers.ModelSerializer):
             "product_type",
             "is_available",
             "is_popular",
+            "region",
+            "is_featured",
             "main_image",
             "is_topup",
             "tags",
@@ -344,6 +384,7 @@ class ProductListAdminSerializer(serializers.ModelSerializer):
             "is_active",
             "created_at",
             "updated_at",
+            "start_from",
         ]
     
     def get_main_image(self, obj):
@@ -353,25 +394,9 @@ class ProductListAdminSerializer(serializers.ModelSerializer):
     def get_is_topup(self, obj):
         return obj.product_type == ProductType.TOPUP
 
-
-# search
-# class SearchSerializer(serializers.ModelSerializer):
-#     main_image = serializers.SerializerMethodField()
-#     class Meta:
-#         model = Product
-#         fields = (
-#             'id',
-#             "name",
-#             "slug",
-#             "is_popular",
-#             "price",
-#             "product_type",
-#             "short_description",
-#             'logo',
-#             'main_image',
-#             "is_available",
-#         )
-
-#     def get_main_image(self, obj):
-#         image = obj.images.filter(is_main=True).first()
-#         return ProductImageSerializer(image).data if image else None
+    def get_start_from(self, obj):
+        if obj.product_type == ProductType.TOPUP and hasattr(obj, 'topup'):
+            min_pkg = obj.topup.packages.filter(is_active=True).order_by('price').first()
+            if min_pkg:
+                return str(min_pkg.price)
+        return None

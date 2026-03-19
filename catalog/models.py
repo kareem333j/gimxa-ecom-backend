@@ -1,3 +1,4 @@
+from google.auth import default
 from django.db import models
 from django.utils.text import slugify
 from catalog.utils.choices import ProductType, StockMode
@@ -121,6 +122,8 @@ class Product(models.Model):
         max_length=20,
         choices=ProductType.choices,
     )
+
+    region = models.CharField(max_length=100, default="global")
     
     stock_mode = models.CharField(
         max_length=20,
@@ -147,6 +150,7 @@ class Product(models.Model):
     is_active = models.BooleanField(default=True)
     is_available = models.BooleanField(default=True)
     is_popular = models.BooleanField(default=False)
+    is_featured = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

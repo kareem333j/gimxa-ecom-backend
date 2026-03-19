@@ -26,18 +26,28 @@ def serialize_product_row(product, request, advanced=False):
     if product.product_type == ProductType.TOPUP and hasattr(product, 'topup'):
         if product.topup.logo:
             logo_url = _get_image_url(request, product.topup.logo)
-            
+
+    # start_from: min active package price for topup products
+    start_from = None
+    if product.product_type == ProductType.TOPUP and hasattr(product, 'topup'):
+        min_pkg = product.topup.packages.filter(is_active=True).order_by('price').first()
+        if min_pkg:
+            start_from = str(min_pkg.price)
+
     data = {
         "id": product.id,
         "name": product.name,
         "slug": product.slug,
         "is_popular": product.is_popular,
+        "region":product.region,
+        "is_featured":product.is_featured,
         "price": str(product.price) if product.price is not None else None,
         "product_type": product.product_type,
         "short_description": product.short_description,
         "logo": logo_url,
         "main_image": main_image_url if main_image else None,
         "is_available": product.is_available,
+        "start_from": start_from,
     }
     
     if advanced:
@@ -78,11 +88,11 @@ def serialize_package_row(product, package, request, advanced=False):
 def get_search_results(request, advanced=False):
     search_query = request.query_params.get('search', '').strip()
     
-    if not search_query:
+    if not search_query and not advanced:
         return []
         
     products = Product.objects.filter(is_active=True).prefetch_related(
-        'images', 'category', 'tags'
+        'images', 'category', 'tags', 'topup__packages'
     )
     
     if search_query:
@@ -106,10 +116,20 @@ def get_search_results(request, advanced=False):
             cat_list = [c.strip() for c in categories.split(',')]
             products = products.filter(category__slug__in=cat_list)
             
+        region = request.query_params.get('region')
+        if region:
+            products = products.filter(region=region)
+            
         is_popular = request.query_params.get('is_popular')
         if is_popular:
             is_popular_bool = is_popular.lower() in ['true', '1', 'yes']
             products = products.filter(is_popular=is_popular_bool)
+
+        is_featured = request.query_params.get('is_featured')
+        if is_featured:
+            is_featured_bool = is_featured.lower() in ['true', '1', 'yes']
+            products = products.filter(is_featured=is_featured_bool)
+
             
         is_available = request.query_params.get('is_available')
         if is_available:
@@ -143,15 +163,48 @@ def get_search_results(request, advanced=False):
                 results.append(serialize_product_row(product, request, advanced))
         else:
             results.append(serialize_product_row(product, request, advanced))
-            
-    # Sort results by `is_popular` descending: first product's, then package's
-    results.sort(
-        key=lambda x: (
-            x.get('is_popular', False),
-            x.get('package', {}).get('is_popular', False) if 'package' in x else False
-        ),
-        reverse=True
-    )
+
+    # Price range filter (applied on built list so topup expanded rows work correctly)
+    if advanced:
+        price_min = request.query_params.get('price_min')
+        price_max = request.query_params.get('price_max')
+
+        if price_min:
+            try:
+                price_min_val = float(price_min)
+                results = [
+                    r for r in results
+                    if r.get('price') is not None and float(r['price']) >= price_min_val
+                ]
+            except ValueError:
+                pass
+
+        if price_max:
+            try:
+                price_max_val = float(price_max)
+                results = [
+                    r for r in results
+                    if r.get('price') is not None and float(r['price']) <= price_max_val
+                ]
+            except ValueError:
+                pass
+
+    # Sort results: ordering by price if requested, else by is_popular descending
+    ordering = request.query_params.get('ordering') if advanced else None
+    if ordering in ('price', '-price'):
+        reverse = ordering == '-price'
+        results.sort(
+            key=lambda x: float(x['price']) if x.get('price') is not None else 0,
+            reverse=reverse
+        )
+    else:
+        results.sort(
+            key=lambda x: (
+                x.get('is_popular', False),
+                x.get('package', {}).get('is_popular', False) if 'package' in x else False
+            ),
+            reverse=True
+        )
     
     return results
 

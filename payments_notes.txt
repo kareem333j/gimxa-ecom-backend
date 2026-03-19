@@ -1,0 +1,16 @@
+# paymob checkout url
+https://accept.paymob.com/unifiedcheckout/?publicKey=PUBLIC_KEY&clientSecret=CLIENT_SECRET
+# EX
+https://accept.paymob.com/unifiedcheckout/?publicKey=egy_pk_test_SQ33Z3EoEPsh4R31kELGM14y1ToQrpv1&clientSecret=egy_csk_test_d1957e7b1054b4a0442ad7f1c11841d5
+
+
+5123 4567 8901 2346
+12/26
+123
+Test Account
+
+
+# ngrok
+ngrok config add-authtoken 3AzcfVw6VT0ZLhfdntfJqyDuIi6_6xzuKLsWNWQ5AmGUcXY7V
+
+ngrok http 8000

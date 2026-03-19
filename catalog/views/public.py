@@ -20,7 +20,8 @@ from catalog.serializers import (
     TagSerializerPublic,
 )
 from core.pagination import DynamicPageNumberPagination
-from django.db.models import Q
+from django.db.models import Q, Min
+from django.db.models.functions import Coalesce
 
 class CategoryListView(APIView):
     permission_classes = [AllowAny]
@@ -96,16 +97,20 @@ class TagListView(APIView):
 class ProductListView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
-    ALLOWED_FILTERS = {"category", "tags", "product_type", "is_available", "is_topup"}
+    ALLOWED_FILTERS = {"category", "is_popular", "region", "is_featured", "tags", "product_type", "is_available", "is_topup"}
+    ALLOWED_ORDERING = {"price", "-price"}
 
     def get(self, request):
         page_number = request.query_params.get('page', 1)
         filter_params = request.query_params.get('filter', None)
         search_query = request.query_params.get('search', None)
-        
+        price_min = request.query_params.get('price_min', None)
+        price_max = request.query_params.get('price_max', None)
+        ordering = request.query_params.get('ordering', None)
+
         paginator = DynamicPageNumberPagination()
         page_size = paginator.get_page_size(request)
-        
+
         filter_dict = {}
         if filter_params:
             for pair in filter_params.split(','):
@@ -118,25 +123,34 @@ class ProductListView(APIView):
                             message="Invalid filter parameter",
                             status=400
                         ), status=400)
-                    
+
+        if ordering and ordering not in self.ALLOWED_ORDERING:
+            return Response(get_response_schema_1(
+                message="Invalid ordering. Allowed: price, -price",
+                status=400
+            ), status=400)
+
         cache_key = get_product_list_cache_page_key(
             page_number=page_number,
             page_size=page_size,
             filter_params=','.join([f"{k}={v}" for k, v in filter_dict.items()]) if filter_dict else None,
             search_query=search_query,
+            extra=f"pmin={price_min}&pmax={price_max}&ord={ordering}"
         )
-        
+
         data = cache.get(cache_key)
-        
+
         if data:
             return Response(get_response_schema_1(
                 data=data,
                 status=200,
                 message="Products retrieved successfully (cached)"
             ), status=200)
-        
-                    
-        queryset = Product.public.all()
+
+        queryset = Product.public.annotate(
+            min_package_price=Min('topup__packages__price')
+        )
+
         if filter_dict:
             queryset = queryset.filter(**filter_dict)
 
@@ -149,9 +163,35 @@ class ProductListView(APIView):
                 Q(category__name__icontains=search_query) |
                 Q(product_type__icontains=search_query)
             )
-            
-        queryset = queryset.prefetch_related('images').all()
-        
+
+        if price_min:
+            try:
+                price_min_val = float(price_min)
+                queryset = queryset.filter(
+                    Q(price__gte=price_min_val) | Q(min_package_price__gte=price_min_val)
+                )
+            except ValueError:
+                return Response(get_response_schema_1(
+                    message="Invalid price_min value", status=400
+                ), status=400)
+
+        if price_max:
+            try:
+                price_max_val = float(price_max)
+                queryset = queryset.filter(
+                    Q(price__lte=price_max_val) | Q(min_package_price__lte=price_max_val)
+                )
+            except ValueError:
+                return Response(get_response_schema_1(
+                    message="Invalid price_max value", status=400
+                ), status=400)
+
+        if ordering:
+            sort_expr = Coalesce('price', 'min_package_price')
+            queryset = queryset.order_by(sort_expr.desc() if ordering == '-price' else sort_expr)
+
+        queryset = queryset.prefetch_related('images', 'topup__packages').distinct()
+
         # pagination
         page = paginator.paginate_queryset(queryset, request)
 
@@ -159,13 +199,13 @@ class ProductListView(APIView):
         data = paginator.get_paginated_response(serializer.data).data
 
         cache.set(cache_key, data, get_product_cache_timeout())
-        
+
         return Response(get_response_schema_1(
             data=data,
             status=200,
             message="Products retrieved successfully"
         ), status=200)
-    
+
 class ProductDetailView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
@@ -180,7 +220,7 @@ class ProductDetailView(APIView):
                     message="Product retrieved successfully (cached)"
                 ), status=200)
                 
-            product = Product.public.prefetch_related('images').get(slug=slug)
+            product = Product.public.prefetch_related('images', 'topup__packages').get(slug=slug)
             serializer = ProductDetailSerializerPublic(product)
             
             # Cache the product details for future requests

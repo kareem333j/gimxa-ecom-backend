@@ -51,6 +51,7 @@ class TopUpPackageSerializer(serializers.ModelSerializer):
 class TopUpGamePublicSerializer(serializers.ModelSerializer):
     product = ProductShortDetailSerializerPublic(read_only=True)
     packages = serializers.SerializerMethodField()
+    start_from = serializers.SerializerMethodField()
 
     class Meta:
         model = TopUpGame
@@ -59,11 +60,16 @@ class TopUpGamePublicSerializer(serializers.ModelSerializer):
             "product",
             "logo",
             "packages",
+            "start_from",
         ]
 
     def get_packages(self, obj):
         qs = obj.packages.filter(is_active=True)
         return qs.count()
+
+    def get_start_from(self, obj):
+        min_pkg = obj.packages.filter(is_active=True).order_by('price').first()
+        return str(min_pkg.price) if min_pkg else None
 
 class TopUpGameDetailPublicSerializer(serializers.ModelSerializer):
     product = ProductShortDetailSerializerPublic(read_only=True)
@@ -157,6 +163,7 @@ class TopUpGameAdminSerializer(serializers.ModelSerializer):
 class TopUpGameReadOnlyAdminSerializer(serializers.ModelSerializer):
     product = ProductShortDetailSerializerPublic(read_only=True)
     fields_count = serializers.SerializerMethodField()
+    start_from = serializers.SerializerMethodField()
 
     class Meta:
         model = TopUpGame
@@ -166,13 +173,18 @@ class TopUpGameReadOnlyAdminSerializer(serializers.ModelSerializer):
             "logo",
             "is_active",
             "created_at",
-            "updated_at",   
+            "updated_at",
             "fields_count",
+            "start_from",
         ]
     
     def get_fields_count(self, obj):
         qs = obj.fields.all()
         return qs.count()
+
+    def get_start_from(self, obj):
+        min_pkg = obj.packages.filter(is_active=True).order_by('price').first()
+        return str(min_pkg.price) if min_pkg else None
 
 class TopUpFieldAdminSerializer(serializers.ModelSerializer):
     class Meta:

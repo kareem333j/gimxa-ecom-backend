@@ -25,7 +25,8 @@ from cache.utils import (
     get_category_cache_timeout, 
     get_category_cache_key
 )
-from django.db.models import Q
+from django.db.models import Q, Min
+from django.db.models.functions import Coalesce
 from core.pagination import DynamicPageNumberPagination
 
 class CategoryAdminView(APIView):
@@ -209,12 +210,16 @@ class TagAdminDetailView(APIView):
 class ProductAdminListView(APIView):
     permission_classes = [AdminPermission]
     authentication_classes = [CookieJWTAuthentication]
-    ALLOWED_FILTERS = {"category", "tags", "product_type", "is_available", "is_topup", "is_active"}
+    ALLOWED_FILTERS = {"category", "tags", "is_popular", "region", "is_featured", "product_type", "is_available", "is_topup", "is_active"}
+    ALLOWED_ORDERING = {"price", "-price"}
 
     def get(self, request):
         page_number = request.query_params.get('page', 1)
         filter_params = request.query_params.get('filter', None)
         search_query = request.query_params.get('search', None)
+        price_min = request.query_params.get('price_min', None)
+        price_max = request.query_params.get('price_max', None)
+        ordering = request.query_params.get('ordering', None)
 
         paginator = DynamicPageNumberPagination()
         page_size = paginator.get_page_size(request)
@@ -231,18 +236,24 @@ class ProductAdminListView(APIView):
                             message="Invalid filter parameter",
                             status=400
                         ), status=400)
-                    
+
+        if ordering and ordering not in self.ALLOWED_ORDERING:
+            return Response(get_response_schema_1(
+                message="Invalid ordering. Allowed: price, -price",
+                status=400
+            ), status=400)
+
         cache_key = get_product_list_cache_page_key(
             page_number=page_number,
             page_size=page_size,
             filter_params=','.join([f"{k}={v}" for k, v in filter_dict.items()]) if filter_dict else None,
             search_query=search_query,
-            is_admin=True
+            is_admin=True,
+            extra=f"pmin={price_min}&pmax={price_max}&ord={ordering}"
         )
 
-
         data = cache.get(cache_key)
-        
+
         if data:
             return Response(get_response_schema_1(
                 data=data,
@@ -250,10 +261,12 @@ class ProductAdminListView(APIView):
                 message="Products retrieved successfully (cached)"
             ), status=200)
 
-        queryset = Product.objects.all()
+        queryset = Product.objects.annotate(
+            min_package_price=Min('topup__packages__price')
+        )
+
         if filter_dict:
             queryset = queryset.filter(**filter_dict)
-
 
         if search_query:
             queryset = queryset.filter(
@@ -264,9 +277,35 @@ class ProductAdminListView(APIView):
                 Q(category__name__icontains=search_query) |
                 Q(product_type__icontains=search_query)
             )
-            
-        queryset = queryset.prefetch_related('images').all()
-        
+
+        if price_min:
+            try:
+                price_min_val = float(price_min)
+                queryset = queryset.filter(
+                    Q(price__gte=price_min_val) | Q(min_package_price__gte=price_min_val)
+                )
+            except ValueError:
+                return Response(get_response_schema_1(
+                    message="Invalid price_min value", status=400
+                ), status=400)
+
+        if price_max:
+            try:
+                price_max_val = float(price_max)
+                queryset = queryset.filter(
+                    Q(price__lte=price_max_val) | Q(min_package_price__lte=price_max_val)
+                )
+            except ValueError:
+                return Response(get_response_schema_1(
+                    message="Invalid price_max value", status=400
+                ), status=400)
+
+        if ordering:
+            sort_expr = Coalesce('price', 'min_package_price')
+            queryset = queryset.order_by(sort_expr.desc() if ordering == '-price' else sort_expr)
+
+        queryset = queryset.prefetch_related('images', 'topup__packages').distinct()
+
         # pagination
         page = paginator.paginate_queryset(queryset, request)
 
