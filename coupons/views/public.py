@@ -15,6 +15,7 @@ from coupons.services.coupon_service import (
     get_cookie_cart_items,
 )
 from users_auth.authentication import OptionalJWTAuthentication
+from payments.services.currency_service import CurrencyService, get_user_currency
 
 
 class ValidateCouponView(APIView):
@@ -44,18 +45,28 @@ class ValidateCouponView(APIView):
             cart_items = get_cookie_cart_items(cookie_cart["items"])
 
         discount_info = calculate_discount(coupon, cart_items)
-        coupon_summary = get_coupon_summary(coupon)
+        currency = get_user_currency(request)
+        coupon_summary = get_coupon_summary(coupon, currency=currency)
+
+        currency = get_user_currency(request)
+        service = CurrencyService()
+
+        # Convert amounts
+        total_discount = str(round(service.convert(discount_info["total_discount"], currency), 2))
+        cart_subtotal = str(round(service.convert(discount_info["cart_subtotal"], currency), 2))
+        cart_total_after_discount = str(round(service.convert(max(discount_info["cart_total_after_discount"], Decimal("0.0000")), currency), 2))
 
         return Response(
             get_response_schema_1(
                 {
                     "coupon": coupon_summary,
                     "discount": {
-                        "total_discount": str(discount_info["total_discount"]),
-                        "cart_subtotal": str(discount_info["cart_subtotal"]),
-                        "cart_total_after_discount": str(max(discount_info["cart_total_after_discount"], Decimal("0.0000"))),
+                        "total_discount": total_discount,
+                        "cart_subtotal": cart_subtotal,
+                        "cart_total_after_discount": cart_total_after_discount,
                         "applicable_items_count": discount_info["applicable_items_count"],
-                    }
+                    },
+                    "currency": currency
                 },
                 200,
                 "coupon is valid"
@@ -113,21 +124,31 @@ class ApplyCouponView(APIView):
         subtotal = sum(item.unit_price * item.quantity for item in cart_items)
         total_after_discount = subtotal - discount_info["total_discount"]
 
-        coupon_summary = get_coupon_summary(coupon)
+        currency = get_user_currency(request)
+        coupon_summary = get_coupon_summary(coupon, currency=currency)
+
+        currency = get_user_currency(request)
+        service = CurrencyService()
+
+        # Convert amounts
+        subtotal_conv = str(round(service.convert(subtotal, currency), 2))
+        discount_conv = str(round(service.convert(discount_info["total_discount"], currency), 2))
+        total_after_discount_conv = str(round(service.convert(max(total_after_discount, Decimal("0.0000")), currency), 2))
 
         response_data = {
             "coupon": coupon_summary,
-            "subtotal": str(subtotal),
-            "discount": str(discount_info["total_discount"]),
-            "total_after_discount": str(max(total_after_discount, Decimal("0.0000"))),
+            "subtotal": subtotal_conv,
+            "discount": discount_conv,
+            "total_after_discount": total_after_discount_conv,
             "applicable_items_count": discount_info["applicable_items_count"],
             "discount_breakdown": [
                 {
                     "product_name": item["product_name"],
-                    "discount": str(item["discount"]),
+                    "discount": str(round(service.convert(item["discount"], currency), 2)),
                 }
                 for item in discount_info["discount_breakdown"]
             ],
+            "currency": currency
         }
 
         response = Response(
@@ -158,13 +179,13 @@ class RemoveCouponView(APIView):
             cart.coupon = None
             cart.save()
             return Response(
-                get_response_schema_1({}, 200, "coupon removed successfully"),
+                get_response_schema_1({}, 200, "coupon removed from cart successfully"),
                 status=200
             )
         
         # For non-authenticated users, remove the coupon from the cookie cart.
         response = Response(
-            get_response_schema_1({}, 200, "coupon removed successfully"),
+            get_response_schema_1({}, 200, "coupon removed from cart successfully"),
             status=200
         )
         cookie_cart = request.COOKIES.get("cart")
@@ -193,7 +214,8 @@ class CouponDetailsView(APIView):
                 status=404
             )
 
-        coupon_summary = get_coupon_summary(coupon)
+        currency = get_user_currency(request)
+        coupon_summary = get_coupon_summary(coupon, currency=currency)
 
         return Response(
             get_response_schema_1(coupon_summary, 200, "coupon details retrieved successfully"),

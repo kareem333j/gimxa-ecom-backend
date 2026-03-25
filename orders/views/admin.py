@@ -11,7 +11,6 @@ from core.pagination import DynamicPageNumberPagination
 from notifications.serializers import NotificationAdminSerializer
 from notifications.services.email_services import create_notification
 from django.utils import timezone
-from notifications.models import Notification
 
 class AdminOrderListView(APIView):
     permission_classes = [AdminPermission]
@@ -46,7 +45,7 @@ class AdminOrderListView(APIView):
 
         # pagination
         page = paginator.paginate_queryset(queryset, request)
-        serializer = OrderListSerializer(page, many=True)
+        serializer = OrderListSerializer(page, many=True, context={"request": request})
         data = paginator.get_paginated_response(serializer.data).data
 
         return Response(
@@ -59,13 +58,13 @@ class AdminOrderDetailView(APIView):
     permission_classes = [AdminPermission]
     authentication_classes = [CookieJWTAuthentication]
 
-    def get(self, _request, order_number):
+    def get(self, request, order_number):
         order = Order.objects.filter(order_number=order_number).first()
         if not order:
             return Response(get_response_schema_1(data=None, status=404, message="Order not found"), status=404)
 
         return Response(
-            get_response_schema_1(data=OrderDetailSerializer(order).data, status=200, message="Order fetched successfully"),
+            get_response_schema_1(data=OrderDetailSerializer(order, context={"request": request}).data, status=200, message="Order fetched successfully"),
             status=200
         )
 
@@ -102,7 +101,7 @@ class AdminOrderDetailView(APIView):
                             notification.save()
 
         return Response(
-            get_response_schema_1(data=OrderDetailSerializer(order).data, status=200, message="Order status updated"),
+            get_response_schema_1(data=OrderDetailSerializer(order, context={"request": request}).data, status=200, message="Order status updated"),
             status=200
         )
 

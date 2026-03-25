@@ -87,11 +87,14 @@ def get_topup_package_list_cache_page_key(
     page_number,
     page_size,
     ordering=None,
+    currency="USD",
     is_admin=False
 ):
     key = f"{TOPUP_GAME_PACKAGE_LIST_CACHE_KEY_PREFIX if not is_admin else TOPUP_GAME_PACKAGE_LIST_ADMIN_CACHE_KEY_PREFIX}{page_number}_size_{page_size}"
     if ordering:
         key += f"_ordering_{ordering}"
+    if currency:
+        key += f"_currency_{currency}"
     return key
 
 # notification cache

@@ -161,6 +161,22 @@ class OrderService:
                 order.total_price = max(total, Decimal("0.0000"))
                 
                 order.save()
+                
+                # Log successful order creation
+                from users.utils import log_user_activity
+                from users.models import UserActivityLog
+                log_user_activity(
+                    user=user,
+                    activity_type=UserActivityLog.ActivityType.ORDER_CREATE,
+                    request=None, # request is not available here, but log_user_activity handles None (partially)
+                    metadata={
+                        "order": {
+                            "order_number": str(order.order_number),
+                            "total_price": str(order.total_price),
+                            "items_count": len(items_data),
+                        }
+                    }
+                )
 
                 return order, order.total_price, None
 

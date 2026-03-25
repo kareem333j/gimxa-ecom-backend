@@ -15,6 +15,18 @@ from django.conf.urls.static import static
 إضافة وظيفة لمسح التوكينز المنتهية كل يوم في الخلفية
 متنساش تغير مدة التوكين
 ظبط مسارات تحميل الصور
+
+ظبط الإشعارات
+
+الدفع للادمن عرض
+
+ظبط الredirect url in paymob
+
+هام جدا
+خلي وقت تحديث العمله الي يعمله لينكس عند البرودكسن
+شيلها من payments.apps
+
+في PaymentGatewayListView غير العملة
 """
 
 urlpatterns = [

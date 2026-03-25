@@ -152,6 +152,8 @@ class PaymobService:
                 "client_secret": data.get("client_secret"),
                 "payment_keys": data.get("payment_keys"),
                 "payment_intent_id": data.get("id"),
+                "amount": Decimal(final_total_amount) / 100,
+                "currency": "EGP",
                 "raw_data": data
             }
         except requests.exceptions.RequestException as e:

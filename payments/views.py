@@ -10,10 +10,30 @@ from rest_framework.response import Response
 from payments.models import Payment
 from decimal import Decimal
 from orders.models import OrderStatus, Order
-from django.shortcuts import get_object_or_404
 from rest_framework import status
 from .services.paymob_service import PaymobService
+from .services.stripe_service import StripeService
 from rest_framework.permissions import IsAuthenticated
+import logging
+from users.utils import log_user_activity
+from users.models import UserActivityLog
+from permissions.custom import IsOwnerOrAdmin
+from .serializers import (
+    PaymentGatewaySerializer, PaymentSerializer, 
+    AdminPaymentSerializer, AdminPaymentSimpleSerializer,
+    AdminPaymentDetailSerializer
+)
+from rest_framework.views import APIView
+from django.contrib.auth import get_user_model
+from core.response_schema import get_response_schema_1
+from permissions.custom import AdminPermission
+from core.pagination import DynamicPageNumberPagination
+from django.db.models import Q
+
+User = get_user_model()
+
+logger = logging.getLogger(__name__)
+
 
 class PaymentGatewayListView(generics.ListAPIView):
     queryset = PaymentGateway.objects.filter(is_active=True).order_by("id")
@@ -28,37 +48,50 @@ class PaymentGatewayListView(generics.ListAPIView):
 @authentication_classes([CookieJWTAuthentication])
 def init_payment(request):
     """
-    Initializes a payment for a given order and gateway.
-    Payload: {"order_id": "...uuid...", "gateway_code": "paymob"}
+    Unified payment init endpoint.
+    Dispatches to the correct gateway handler based on gateway_type.
+    Payload: {"order_id": "...", "gateway_code": "..."}
     """
     order_id = request.data.get("order_id")
     gateway_code = request.data.get("gateway_code")
-    notification_url = "https://formatively-lictorian-thresa.ngrok-free.dev/api/v1/payments/webhook/?gateway=paymob"
-    redirection_url = request.data.get("redirection_url", "https://example.com/payment/success")
 
     if not order_id or not gateway_code:
         return Response({"error": "order_id and gateway_code are required"}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
         order = Order.objects.get(order_number=order_id)
-    except:
+    except Order.DoesNotExist:
         return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
 
     try:
         gateway = PaymentGateway.objects.get(gateway_code=gateway_code)
-    except:
+    except PaymentGateway.DoesNotExist:
         return Response({"error": "Gateway not found"}, status=status.HTTP_404_NOT_FOUND)
 
     if order.status != OrderStatus.PENDING:
-        return Response({"error": f"Cannot initiate payment for order in {order.status} state."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": f"Cannot initiate payment for order in {order.status} state."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
+    # Cancel any existing pending or intended payments for this order
+    Payment.objects.filter(
+        order=order, 
+        status__in=["pending", "intended"]
+    ).update(status="cancelled")
+
+    # ------------------------------------------------------------------ #
+    #  Paymob                                                              #
+    # ------------------------------------------------------------------ #
     if gateway.gateway_type == "paymob":
+        notification_url = "https://formatively-lictorian-thresa.ngrok-free.dev/api/v1/payments/webhook/?gateway=paymob"
+        redirection_url = request.data.get("redirection_url", "https://example.com/payment/success")
+
         result = PaymobService.create_intention(order, request.user, notification_url, redirection_url, gateway)
 
         if not result.get("success"):
             return Response({"error": result.get("error")}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Create Payment Record
         gateway_order_id = None
         payment_keys = result.get("payment_keys", [])
         if payment_keys:
@@ -70,7 +103,7 @@ def init_payment(request):
             payment_intent_id=result.get("payment_intent_id"),
             client_secret=result.get("client_secret"),
             gateway_order_id=str(gateway_order_id) if gateway_order_id else None,
-            amount=order.total_price,
+            amount=result.get("amount", order.total_price),
             currency="EGP",
             status="intended",
             raw_response=result.get("raw_data")
@@ -83,6 +116,32 @@ def init_payment(request):
             "payment_keys": result.get("payment_keys")
         }, status=status.HTTP_200_OK)
 
+    # ------------------------------------------------------------------ #
+    #  Stripe                                                              #
+    # ------------------------------------------------------------------ #
+    if gateway.gateway_type == "stripe":
+        result = StripeService.create_payment_intent(order, request.user, gateway)
+
+        if not result.get("success"):
+            return Response({"error": result.get("error")}, status=status.HTTP_400_BAD_REQUEST)
+
+        payment = Payment.objects.create(
+            order=order,
+            gateway=gateway,
+            payment_intent_id=result.get("payment_intent_id"),
+            client_secret=result.get("client_secret"),
+            amount=result.get("amount", order.total_price),
+            currency=result.get("currency", "USD"),
+            status="intended",
+            raw_response=result.get("raw_data")
+        )
+
+        return Response({
+            "client_secret": payment.client_secret,
+            "payment_intent_id": payment.payment_intent_id,
+            "checkout_url": result.get("checkout_url"),
+        }, status=status.HTTP_200_OK)
+
     return Response({"error": "Gateway not implemented"}, status=status.HTTP_501_NOT_IMPLEMENTED)
 
 
@@ -91,7 +150,10 @@ def init_payment(request):
 @authentication_classes([])
 def payment_webhook(request):
     gateway_type = request.GET.get('gateway', 'stripe')
-    
+
+    # ------------------------------------------------------------------ #
+    #  Paymob webhook                                                      #
+    # ------------------------------------------------------------------ #
     if gateway_type == 'paymob':
         raw_body = request.body
         received_hmac = (
@@ -102,19 +164,19 @@ def payment_webhook(request):
 
         if not received_hmac:
             return Response({"error": "Missing HMAC"}, status=400)
-        
+
         event = request.data
         event_type = event.get("type")
         obj = event.get("obj", {})
-        
+
         transaction_id = obj.get("id")
-        
+
         payment_intent_id = None
         if event_type == "TOKEN":
             payment_intent_id = obj.get("next_payment_intention")
         elif event_type == "TRANSACTION":
             payment_intent_id = obj.get("payment_key_claims", {}).get("next_payment_intention")
-        
+
         if not payment_intent_id:
             payment_intent_id = obj.get("intention") or obj.get("payment_intent")
 
@@ -132,25 +194,53 @@ def payment_webhook(request):
                     return Response(status=200)
 
                 payment.raw_response = event
-                
+
                 paymob_order_id = obj.get("order", {}).get("id") or obj.get("order_id")
                 if paymob_order_id:
                     payment.gateway_order_id = str(paymob_order_id)
 
                 if event_type == "TRANSACTION":
-
                     success = obj.get("success")
                     payment.transaction_id = str(transaction_id)
-                    
+
                     if success is True:
                         payment.status = "success"
                         payment.order.status = OrderStatus.PAID
                         payment.order.save()
+                        
+                        # Log Paymob success
+                        log_user_activity(
+                            user=payment.order.user,
+                            activity_type=UserActivityLog.ActivityType.PAYMENT_SUCCESS,
+                            request=request,
+                            metadata={
+                                "payment": {
+                                    "gateway": "paymob",
+                                    "transaction_id": payment.transaction_id,
+                                    "amount": str(payment.amount),
+                                    "order_number": str(payment.order.order_number),
+                                }
+                            }
+                        )
                     elif success is False:
                         payment.status = "failed"
                         payment.order.status = OrderStatus.FAILED
                         payment.order.save()
-                
+
+                        # Log Paymob failure
+                        log_user_activity(
+                            user=payment.order.user,
+                            activity_type=UserActivityLog.ActivityType.PAYMENT_FAIL,
+                            request=request,
+                            metadata={
+                                "payment": {
+                                    "gateway": "paymob",
+                                    "error": obj.get("data", {}).get("message", "Unknown error"),
+                                    "order_number": str(payment.order.order_number),
+                                }
+                            }
+                        )
+
                 payment.save()
 
         except Payment.DoesNotExist:
@@ -159,17 +249,35 @@ def payment_webhook(request):
         except Exception as e:
             logger.error(f"Error processing Paymob webhook: {str(e)}", exc_info=True)
             return Response({"error": str(e)}, status=500)
-            
+
         return Response(status=200)
 
+    # ------------------------------------------------------------------ #
+    #  Stripe webhook                                                      #
+    # ------------------------------------------------------------------ #
+    if gateway_type == 'stripe':
+        raw_body = request.body
+        sig_header = request.headers.get("Stripe-Signature")
 
-    else:
-        event = request.data
+        try:
+            event = StripeService.verify_webhook_signature(raw_body, sig_header)
+        except Exception as e:
+            logger.error(f"Stripe webhook signature verification failed: {e}")
+            return Response({"error": "Invalid signature"}, status=400)
 
-        payment_intent_id = event.get("id")
-        status_event = event.get("status")
-        paid_amount = Decimal(str(event.get("amount") or 0))
-        currency = event.get("currency")
+        if isinstance(event, dict):
+            event_type = event.get("type")
+            data_obj = event.get("data", {}).get("object", {})
+        else:
+            event_type = getattr(event, "type", None) or event.get("type")
+            data_obj = getattr(getattr(event, "data", None), "object", None)
+            if data_obj is None:
+                data_obj = event.get("data", {}).get("object", {})
+                
+        payment_intent_id = getattr(data_obj, "id", None) if not isinstance(data_obj, dict) else data_obj.get("id")
+
+        if not payment_intent_id:
+            return Response({"error": "Missing payment_intent id"}, status=400)
 
         try:
             with transaction.atomic():
@@ -180,19 +288,240 @@ def payment_webhook(request):
                 if payment.status == "success":
                     return Response(status=200)
 
-                if status_event == "paid" or status_event == "succeeded":
-                    payment.status = "success"
-                    payment.raw_response = event
-                    payment.save()
+                payment.raw_response = data_obj
 
-                    order = payment.order
-                    order.status = OrderStatus.PAID
-                    order.save()
-                else:
+                # Handle both PaymentIntent and Session events
+                if event_type in ("payment_intent.succeeded", "checkout.session.completed"):
+                    # For checkout session, ensure payment is successful before marking as paid
+                    payment_status = getattr(data_obj, "payment_status", None) if not isinstance(data_obj, dict) else data_obj.get("payment_status")
+                    if event_type == "checkout.session.completed" and payment_status != "paid":
+                        # If payment status is not paid, wait for payment_intent.succeeded or ignore
+                        return Response(status=200)
+
+                    payment.status = "success"
+                    
+                    # Safe getters for Stripe object fields
+                    latest_charge = getattr(data_obj, "latest_charge", None) if not isinstance(data_obj, dict) else data_obj.get("latest_charge")
+                    intent_id = getattr(data_obj, "payment_intent", None) if not isinstance(data_obj, dict) else data_obj.get("payment_intent")
+                    
+                    # payment.transaction_id = data_obj.get("latest_charge") or str(payment_intent_id)
+                    payment.transaction_id = latest_charge or intent_id or str(payment_intent_id)
+                    payment.order.status = OrderStatus.PAID
+                    payment.order.save()
+
+                    # Log Stripe success
+                    log_user_activity(
+                        user=payment.order.user,
+                        activity_type=UserActivityLog.ActivityType.PAYMENT_SUCCESS,
+                        request=request,
+                        metadata={
+                            "payment": {
+                                "gateway": "stripe",
+                                "transaction_id": payment.transaction_id,
+                                "amount": str(payment.amount),
+                                "order_number": str(payment.order.order_number),
+                            }
+                        }
+                    )
+
+                # elif event_type in ("payment_intent.payment_failed", "payment_intent.canceled"):
+                elif event_type in ("payment_intent.payment_failed", "payment_intent.canceled", "checkout.session.expired"):
                     payment.status = "failed"
-                    payment.save()
+                    payment.order.status = OrderStatus.FAILED
+                    payment.order.save()
+
+                    # Log Stripe failure
+                    log_user_activity(
+                        user=payment.order.user,
+                        activity_type=UserActivityLog.ActivityType.PAYMENT_FAIL,
+                        request=request,
+                        metadata={
+                            "payment": {
+                                "gateway": "stripe",
+                                "event_type": event_type,
+                                "order_number": str(payment.order.order_number),
+                            }
+                        }
+                    )
+
+                payment.save()
 
         except Payment.DoesNotExist:
-            return Response(status=404)
+            logger.error(f"Stripe: Payment with intent {payment_intent_id} not found")
+            # Return 200 so Stripe doesn't keep retrying for unknown intents
+            return Response(status=200)
+        except Exception as e:
+            logger.error(f"Error processing Stripe webhook: {str(e)}", exc_info=True)
+            return Response({"error": str(e)}, status=500)
 
         return Response(status=200)
+    
+    return Response({"error": "Unknown gateway"}, status=400)
+
+class UserPaymentListView(APIView):
+    permission_classes = [IsOwnerOrAdmin]
+    authentication_classes = [CookieJWTAuthentication]
+
+    def get(self, _request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+            if not user.is_superuser and str(user.id) != str(user_id):
+                return Response(get_response_schema_1(
+                    data=None,
+                    message="You are not authorized to view this page",
+                    status=403
+                ), status=403)
+            payments = Payment.objects.filter(order__user_id=user_id).order_by("-created_at")
+            serializer = PaymentSerializer(payments, many=True)
+            return Response(get_response_schema_1(
+                data=serializer.data,
+                message="Payments retrieved successfully",
+                status  =200
+            ), status=200)
+        except:
+            return Response(get_response_schema_1(
+                data=None,
+                message="User not found",
+                status=404
+            ), status=404)
+
+class OrderPaymentListView(APIView):
+    permission_classes = [IsOwnerOrAdmin]
+    authentication_classes = [CookieJWTAuthentication]
+
+    def get(self, _request, order_number):
+        try:
+            order = Order.objects.get(order_number=order_number)
+            if not order.user.is_superuser and str(order.user.id) != str(_request.user.id):
+                return Response(get_response_schema_1(
+                    data=None,
+                    message="You are not authorized to view this page",
+                    status=403
+                ), status=403)
+            payments = Payment.objects.filter(order_id=order.id).order_by("-created_at")
+            serializer = PaymentSerializer(payments, many=True)
+            return Response(get_response_schema_1(
+                data=serializer.data,
+                message="Payments retrieved successfully",
+                status=200
+            ), status=200)
+        except:
+            return Response(get_response_schema_1(
+                data=None,
+                message="Order not found",
+                status=404
+            ), status=404)
+
+# ------------------------------------------------------------------ #
+#  Admin Views                                                       #
+# ------------------------------------------------------------------ #
+
+class AdminPaymentListView(APIView):
+    permission_classes = [AdminPermission]
+    authentication_classes = [CookieJWTAuthentication]
+
+    def get(self, request):
+        queryset = Payment.objects.all().order_by("-created_at")
+
+        # Filtering
+        user_filter = request.query_params.get("user")
+        if user_filter:
+            queryset = queryset.filter(
+                Q(order__user__username__icontains=user_filter) |
+                Q(order__user__email__icontains=user_filter) |
+                Q(order__user__full_name__icontains=user_filter)
+            )
+
+        currency_filter = request.query_params.get("currency")
+        if currency_filter:
+            queryset = queryset.filter(currency=currency_filter.upper())
+
+        country_filter = request.query_params.get("country")
+        if country_filter:
+            queryset = queryset.filter(order__user__profile__country__icontains=country_filter)
+
+        status_filter = request.query_params.get("status")
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+
+        # Ordering
+        ordering = request.query_params.get("ordering")
+        if ordering in ["amount", "-amount", "created_at", "-created_at"]:
+            queryset = queryset.order_by(ordering)
+
+        # Pagination
+        paginator = DynamicPageNumberPagination()
+        page = paginator.paginate_queryset(queryset, request)
+        if page is not None:
+            serializer = AdminPaymentSimpleSerializer(page, many=True)
+            paginated_data = paginator.get_paginated_response(serializer.data).data
+            return Response(get_response_schema_1(
+                data=paginated_data,
+                message="Payments retrieved successfully",
+                status=200
+            ), status=200)
+
+        serializer = AdminPaymentSimpleSerializer(queryset, many=True)
+        return Response(get_response_schema_1(
+            data=serializer.data,
+            message="Payments retrieved successfully",
+            status=200
+        ), status=200)
+
+class AdminPaymentStatusUpdateView(APIView):
+    permission_classes = [AdminPermission]
+    authentication_classes = [CookieJWTAuthentication]
+
+    def patch(self, request, payment_id):
+        new_status = request.data.get("status")
+        if not new_status:
+            return Response(get_response_schema_1(
+                data=None,
+                message="Status is required",
+                status=400
+            ), status=400)
+
+        try:
+            payment = Payment.objects.get(id=payment_id)
+            if new_status in Payment.StatusChoices:
+                payment.status = new_status
+                payment.save()
+            else:
+                return Response(get_response_schema_1(
+                    data=None,
+                    message="Invalid status",
+                    status=400
+                ), status=400)
+            
+            serializer = AdminPaymentSimpleSerializer(payment)
+            return Response(get_response_schema_1(
+                data=serializer.data,
+                message=f"Payment status updated to {new_status}",
+                status=200
+            ), status=200)
+        except:
+            return Response(get_response_schema_1(
+                data=None,
+                message="Payment not found",
+                status=404
+            ), status=404)
+
+class AdminPaymentDetailView(APIView):
+    permission_classes = [AdminPermission]
+    authentication_classes = [CookieJWTAuthentication]
+
+    def get(self, request, payment_id):
+        try:
+            payment = Payment.objects.get(id=payment_id)
+            serializer = AdminPaymentDetailSerializer(payment, context={"request": request})
+            return Response(get_response_schema_1(
+                data=serializer.data,
+                message="Payment details retrieved successfully",
+                status=200
+            ), status=200)
+        except:
+            return Response(get_response_schema_1(
+                data=None,
+                message="Payment not found",
+                status=404
+            ), status=404)

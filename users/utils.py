@@ -58,20 +58,20 @@ def parse_user_agent(user_agent_string: str):
         "is_bot": user_agent.is_bot,
     }
     
-def log_user_activity(*, user, activity_type, request, metadata=None):
-    ip = get_client_ip(request)
-    user_agent = get_user_agent(request)
-    device_info = parse_user_agent(user_agent)
+def log_user_activity(*, user, activity_type, request=None, metadata=None):
+    ip = get_client_ip(request) if request else "0.0.0.0"
+    user_agent = get_user_agent(request) if request else "internal/system"
+    device_info = parse_user_agent(user_agent) if request else {}
 
     UserActivityLog.objects.create(
         user=user,
         activity_type=activity_type,
-        ip_address=ip,
-        user_agent=user_agent,
+        ip_address=ip if ip != "0.0.0.0" else None,
+        user_agent=user_agent if user_agent != "internal/system" else None,
         metadata={
             "device": device_info,
             "geo": {
-                "location": get_user_location(ip),
+                "location": get_user_location(ip) if ip != "0.0.0.0" else None,
                 "ip": ip,
             },
             **(metadata or {}),
@@ -199,6 +199,96 @@ from users.models import (
 from users.models import Role
 from users.utils import log_user_activity
 from users.utils import get_client_ip, get_user_location
+from users.models import CURRENCIES
+
+COUNTRY_CURRENCY_MAP = {
+    "Egypt": CURRENCIES.EGP,
+    "EG": CURRENCIES.EGP,
+    "Saudi Arabia": CURRENCIES.SAR,
+    "SA": CURRENCIES.SAR,
+    "United Arab Emirates": CURRENCIES.AED,
+    "AE": CURRENCIES.AED,
+    "Qatar": CURRENCIES.QAR,
+    "QA": CURRENCIES.QAR,
+    "Kuwait": CURRENCIES.KWD,
+    "KW": CURRENCIES.KWD,
+    "Bahrain": CURRENCIES.BHD,
+    "BH": CURRENCIES.BHD,
+    "Oman": CURRENCIES.OMR,
+    "OM": CURRENCIES.OMR,
+    "Turkey": CURRENCIES.TRY,
+    "TR": CURRENCIES.TRY,
+    "Japan": CURRENCIES.JPY,
+    "JP": CURRENCIES.JPY,
+    "South Korea": CURRENCIES.KRW,
+    "KR": CURRENCIES.KRW,
+    "China": CURRENCIES.CNY,
+    "CN": CURRENCIES.CNY,
+    "Hong Kong": CURRENCIES.HKD,
+    "HK": CURRENCIES.HKD,
+    "Taiwan": CURRENCIES.TWD,
+    "TW": CURRENCIES.TWD,
+    "Singapore": CURRENCIES.SGD,
+    "SG": CURRENCIES.SGD,
+    "Malaysia": CURRENCIES.MYR,
+    "MY": CURRENCIES.MYR,
+    "Thailand": CURRENCIES.THB,
+    "TH": CURRENCIES.THB,
+    "India": CURRENCIES.INR,
+    "IN": CURRENCIES.INR,
+    "Indonesia": CURRENCIES.IDR,
+    "ID": CURRENCIES.IDR,
+    "Philippines": CURRENCIES.PHP,
+    "PH": CURRENCIES.PHP,
+    "Vietnam": CURRENCIES.VND,
+    "VN": CURRENCIES.VND,
+    "United Kingdom": CURRENCIES.GBP,
+    "GB": CURRENCIES.GBP,
+    "Switzerland": CURRENCIES.CHF,
+    "CH": CURRENCIES.CHF,
+    "Sweden": CURRENCIES.SEK,
+    "SE": CURRENCIES.SEK,
+    "Norway": CURRENCIES.NOK,
+    "NO": CURRENCIES.NOK,
+    "Denmark": CURRENCIES.DKK,
+    "DK": CURRENCIES.DKK,
+    "Poland": CURRENCIES.PLN,
+    "PL": CURRENCIES.PLN,
+    "Czech Republic": CURRENCIES.CZK,
+    "CZ": CURRENCIES.CZK,
+    "Hungary": CURRENCIES.HUF,
+    "HU": CURRENCIES.HUF,
+    "Romania": CURRENCIES.RON,
+    "RO": CURRENCIES.RON,
+    "Canada": CURRENCIES.CAD,
+    "CA": CURRENCIES.CAD,
+    "Brazil": CURRENCIES.BRL,
+    "BR": CURRENCIES.BRL,
+    "Mexico": CURRENCIES.MXN,
+    "MX": CURRENCIES.MXN,
+    "Argentina": CURRENCIES.ARS,
+    "AR": CURRENCIES.ARS,
+    "Chile": CURRENCIES.CLP,
+    "CL": CURRENCIES.CLP,
+    "South Africa": CURRENCIES.ZAR,
+    "ZA": CURRENCIES.ZAR,
+    "Nigeria": CURRENCIES.NGN,
+    "NG": CURRENCIES.NGN,
+    "United States": CURRENCIES.USD,
+    "US": CURRENCIES.USD,
+    # Eurozone
+    "Germany": CURRENCIES.EUR, "DE": CURRENCIES.EUR,
+    "France": CURRENCIES.EUR, "FR": CURRENCIES.EUR,
+    "Italy": CURRENCIES.EUR, "IT": CURRENCIES.EUR,
+    "Spain": CURRENCIES.EUR, "ES": CURRENCIES.EUR,
+    "Netherlands": CURRENCIES.EUR, "NL": CURRENCIES.EUR,
+    "Belgium": CURRENCIES.EUR, "BE": CURRENCIES.EUR,
+    "Austria": CURRENCIES.EUR, "AT": CURRENCIES.EUR,
+    "Portugal": CURRENCIES.EUR, "PT": CURRENCIES.EUR,
+    "Greece": CURRENCIES.EUR, "GR": CURRENCIES.EUR,
+    "Finland": CURRENCIES.EUR, "FI": CURRENCIES.EUR,
+    "Ireland": CURRENCIES.EUR, "IE": CURRENCIES.EUR,
+}
 
 
 def initialize_new_user(user, request=None, provider="email", via="password"):
@@ -213,17 +303,32 @@ def initialize_new_user(user, request=None, provider="email", via="password"):
     location = get_user_location(ip_address) if ip_address else None
 
     with transaction.atomic():
+        settings_defaults = {"location": location}
         # Create Profile based on role
         if user.role == Role.USER:
-            UserProfile.objects.get_or_create(user=user)
+            UserProfile.objects.get_or_create(
+                user=user,
+                defaults={
+                    "country": location.split(",")[1].strip() if location else None,
+                    "city": location.split(",")[0].strip() if location else None,
+                }
+            )
+
 
         elif user.role == Role.ADMIN:
             AdminProfile.objects.get_or_create(user=user)
 
         # Create Settings
+        # Map location to currency
+        try:
+            user_country = location.split(",")[1].strip() if (location and "," in location) else location
+            settings_defaults["currency"] = COUNTRY_CURRENCY_MAP.get(user_country, CURRENCIES.USD)
+        except Exception:
+            settings_defaults["currency"] = CURRENCIES.USD
+
         UserSettings.objects.get_or_create(
             user=user,
-            defaults={"location": location},
+            defaults=settings_defaults
         )
 
         # Log registration activity

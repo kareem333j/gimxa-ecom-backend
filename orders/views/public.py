@@ -13,6 +13,8 @@ from orders.models import Order
 import uuid
 from orders.utils.choices import OrderStatus
 from cache.utils import format_filter_value
+from users_auth.authentication import OptionalJWTAuthentication
+from payments.services.currency_service import get_user_currency
 
 class OrderDetailView(APIView):
     permission_classes = [IsAuthenticated]
@@ -29,7 +31,7 @@ class OrderDetailView(APIView):
             return Response(get_response_schema_1(data=None, status=404, message="Order not found"), status=404)
 
         return Response(
-            get_response_schema_1(data=OrderDetailSerializer(order).data, status=200, message="Order fetched successfully"),
+            get_response_schema_1(data=OrderDetailSerializer(order, context={"request": request}).data, status=200, message="Order fetched successfully"),
             status=200
         )
 
@@ -59,7 +61,7 @@ class OrderListView(APIView):
             orders = orders.filter(**filter_dict)
 
         return Response(
-            get_response_schema_1(data=OrderListSerializer(orders, many=True).data, status=200, message="Orders fetched successfully"),
+            get_response_schema_1(data=OrderListSerializer(orders, many=True, context={"request": request}).data, status=200, message="Orders fetched successfully"),
             status=200
         )
 
@@ -82,6 +84,20 @@ class CancelOrderView(APIView):
 
         order.status = OrderStatus.CANCELLED
         order.save()
+
+        # Log order cancellation
+        from users.utils import log_user_activity
+        from users.models import UserActivityLog
+        log_user_activity(
+            user=request.user,
+            activity_type=UserActivityLog.ActivityType.ORDER_CANCEL,
+            request=request,
+            metadata={
+                "order": {
+                    "order_number": str(order.order_number),
+                }
+            }
+        )
 
         return Response(
             get_response_schema_1(data=None, status=200, message="Order cancelled successfully"),
@@ -150,7 +166,7 @@ class BuyNowCheckoutView(APIView):
             
             return Response(
                 get_response_schema_1(
-                    data=OrderDetailSerializer(order).data,
+                    data=OrderDetailSerializer(order, context={"request": request}).data,
                     status=201,
                     message="Order created"
                 ),
@@ -221,7 +237,7 @@ class CheckoutView(APIView):
             # Clear cart after successful order creation
             cart.delete()
 
-            serializer = OrderDetailSerializer(order)
+            serializer = OrderDetailSerializer(order, context={"request": request})
             return Response(
                 get_response_schema_1(data=serializer.data, status=201, message="Order created"),
                 status=201

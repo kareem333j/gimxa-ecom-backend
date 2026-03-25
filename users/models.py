@@ -9,7 +9,8 @@ from .choices import (
     Role, 
     AUTH_PROVIDERS, 
     LANGUAGES, 
-    COLOR_MODES
+    COLOR_MODES,
+    CURRENCIES
 )
 from django.utils import timezone
 
@@ -146,6 +147,10 @@ class UserActivityLog(models.Model):
         RESET_PASSWORD = "reset_password", "Reset Password"
         VERIFY_EMAIL = "verify_email", "Verify Email"
         RESEND_OTP = "resend_otp", "Resend OTP"
+        ORDER_CREATE = "order_create", "Order Create"
+        ORDER_CANCEL = "order_cancel", "Order Cancel"
+        PAYMENT_SUCCESS = "payment_success", "Payment Success"
+        PAYMENT_FAIL = "payment_fail", "Payment Fail"
 
     user = models.ForeignKey(
         User,
@@ -185,6 +190,7 @@ class UserSettings(models.Model):
     language_preference = models.CharField(
         max_length=50, choices=LANGUAGES.choices, default=LANGUAGES.EN
     )
+    currency = models.CharField(max_length=4, choices=CURRENCIES.choices, default=CURRENCIES.USD)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

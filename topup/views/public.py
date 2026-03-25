@@ -22,11 +22,14 @@ from django.core.cache import cache
 from topup.models import TopUpPackage
 from core.pagination import DynamicPageNumberPagination
 from django.db.models import Min
+from users_auth.authentication import OptionalJWTAuthentication
+from payments.services.currency_service import get_user_currency
+from payments.services.currency_service import CurrencyService
 
 
 class TopUpGameListView(APIView):
     permission_classes = [AllowAny]
-    authentication_classes = []
+    authentication_classes = [OptionalJWTAuthentication]
     ALLOWED_FILTERS = ["is_popular", "is_featured"]
     ALLOWED_ORDERING = {"price", "-price"}
 
@@ -60,13 +63,16 @@ class TopUpGameListView(APIView):
                 status=400
             ), status=400)
 
+        currency = get_user_currency(request)
+        service = CurrencyService()
+
         cache_key = get_topup_game_list_search_cache_key(
             page_number=page_number,
             page_size=page_size,
             search_query=search_query,
             filter_params=','.join([f"{k}={v}" for k, v in filter_dict.items()]) if filter_dict else None,
             is_admin=False,
-            extra=f"pmin={price_min}&pmax={price_max}&ord={ordering}"
+            extra=f"pmin={price_min}&pmax={price_max}&ord={ordering}&currency={currency}"
         )
         cached_data = cache.get(cache_key)
 
@@ -90,7 +96,9 @@ class TopUpGameListView(APIView):
 
         if price_min:
             try:
-                queryset = queryset.filter(min_pkg_price__gte=float(price_min))
+                # Convert price_min from user currency back to USD for DB filtering
+                price_min_usd = float(service.convert(price_min, "USD", from_currency=currency))
+                queryset = queryset.filter(min_pkg_price__gte=price_min_usd)
             except ValueError:
                 return Response(get_response_schema_1(
                     message="Invalid price_min value", status=400
@@ -98,7 +106,9 @@ class TopUpGameListView(APIView):
 
         if price_max:
             try:
-                queryset = queryset.filter(min_pkg_price__lte=float(price_max))
+                # Convert price_max from user currency back to USD for DB filtering
+                price_max_usd = float(service.convert(price_max, "USD", from_currency=currency))
+                queryset = queryset.filter(min_pkg_price__lte=price_max_usd)
             except ValueError:
                 return Response(get_response_schema_1(
                     message="Invalid price_max value", status=400
@@ -108,7 +118,7 @@ class TopUpGameListView(APIView):
             queryset = queryset.order_by('-min_pkg_price' if ordering == '-price' else 'min_pkg_price')
 
         page = paginator.paginate_queryset(queryset, request)
-        serializer = TopUpGamePublicSerializer(page, many=True)
+        serializer = TopUpGamePublicSerializer(page, many=True, context={"request": request})
         data = paginator.get_paginated_response(serializer.data).data
         cache.set(cache_key, data, get_topup_cache_timeout())
 
@@ -123,10 +133,10 @@ class TopUpGameListView(APIView):
 
 class TopUpGameDetailView(APIView):
     permission_classes = [AllowAny]
-    authentication_classes = []
+    authentication_classes = [OptionalJWTAuthentication]
 
-    def get(self, _request, product_slug):
-        cache_key = get_topup_game_cache_key(product_slug)
+    def get(self, request, product_slug):
+        cache_key = get_topup_game_cache_key(product_slug) + f"&currency={get_user_currency(request)}"
         cached_data = cache.get(cache_key)
 
         if cached_data:
@@ -150,7 +160,7 @@ class TopUpGameDetailView(APIView):
                 status=404
             )
 
-        serializer = TopUpGameDetailPublicSerializer(game)
+        serializer = TopUpGameDetailPublicSerializer(game, context={"request": request})
                     
         cache.set(cache_key, serializer.data, get_topup_cache_timeout())
 
@@ -166,7 +176,7 @@ class TopUpGameDetailView(APIView):
 
 class TopUpPackageListView(APIView):
     permission_classes = [AllowAny]
-    authentication_classes = []
+    authentication_classes = [OptionalJWTAuthentication]
     ORDERING_OPTIONS = ["price", "-price", "-is_popular"]
 
     def get(self, request, product_slug):
@@ -182,6 +192,7 @@ class TopUpPackageListView(APIView):
             page_number=page_number,
             page_size=page_size,
             ordering=ordering,
+            currency=get_user_currency(request)
         )
 
         data = cache.get(cache_key)
@@ -198,7 +209,7 @@ class TopUpPackageListView(APIView):
 
         qs = TopUpPackage.public.filter(game__product__slug=product_slug).order_by(ordering)
         page = paginator.paginate_queryset(qs, request)
-        serializer = TopUpPackageSerializer(page, many=True)
+        serializer = TopUpPackageSerializer(page, many=True, context={"request": request})
         data = paginator.get_paginated_response(serializer.data).data
         cache.set(cache_key, data, get_packages_cache_timeout())
         

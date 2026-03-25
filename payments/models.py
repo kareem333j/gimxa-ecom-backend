@@ -24,6 +24,14 @@ class PaymentGateway(models.Model):
 
 
 class Payment(models.Model):
+    class StatusChoices(models.TextChoices):
+        PENDING = "pending", "Pending"
+        INTENDED = "intended", "Intended"
+        SUCCESS = "success", "Success"
+        FAILED = "failed", "Failed"
+        REFUNDED = "refunded", "Refunded"
+        CANCELLED = "cancelled", "Cancelled"
+
     order = models.ForeignKey(
         "orders.Order",
         on_delete=models.CASCADE,
@@ -45,14 +53,8 @@ class Payment(models.Model):
 
     status = models.CharField(
         max_length=20,
-        choices=[
-            ("pending", "Pending"),
-            ("intended", "Intended"),
-            ("success", "Success"),
-            ("failed", "Failed"),
-            ("refunded", "Refunded"),
-        ],
-        default="pending"
+        choices=StatusChoices.choices,
+        default=StatusChoices.PENDING
     )
 
     raw_response = models.JSONField(null=True, blank=True)
@@ -61,3 +63,12 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"{self.order} - {self.gateway} - {self.status}"
+
+
+class ExchangeRateSnapshot(models.Model):
+    base = models.CharField(max_length=10, default="USD")
+    rates = models.JSONField()
+    last_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Rates ({self.base}) - {self.last_updated}"

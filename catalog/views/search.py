@@ -3,10 +3,12 @@ from rest_framework.response import Response
 from django.db.models import Q
 # from rest_framework.pagination import PageNumberPagination
 from core.pagination import DynamicPageNumberPagination
+from payments.services.currency_service import CurrencyService, get_user_currency
 
 from catalog.models import Product
 from catalog.utils.choices import ProductType
 from rest_framework.permissions import AllowAny
+from users_auth.authentication import OptionalJWTAuthentication
 
 # class CustomPagination(PageNumberPagination):
 #     page_size = 24
@@ -18,7 +20,7 @@ def _get_image_url(request, image_field):
         return request.build_absolute_uri(image_field.url)
     return None
 
-def serialize_product_row(product, request, advanced=False):
+def serialize_product_row(product, request, advanced=False, currency="USD", service=None):
     main_image = product.images.filter(is_main=True).first()
     main_image_url = _get_image_url(request, main_image.image) if main_image else None
     
@@ -32,7 +34,14 @@ def serialize_product_row(product, request, advanced=False):
     if product.product_type == ProductType.TOPUP and hasattr(product, 'topup'):
         min_pkg = product.topup.packages.filter(is_active=True).order_by('price').first()
         if min_pkg:
-            start_from = str(min_pkg.price)
+            start_from = min_pkg.price
+
+    price = product.price
+    if service and currency != "USD":
+        if price is not None:
+            price = round(service.convert(price, currency), 2)
+        if start_from is not None:
+            start_from = round(service.convert(start_from, currency), 2)
 
     data = {
         "id": product.id,
@@ -41,13 +50,14 @@ def serialize_product_row(product, request, advanced=False):
         "is_popular": product.is_popular,
         "region":product.region,
         "is_featured":product.is_featured,
-        "price": str(product.price) if product.price is not None else None,
+        "price": str(price) if price is not None else None,
         "product_type": product.product_type,
         "short_description": product.short_description,
         "logo": logo_url,
         "main_image": main_image_url if main_image else None,
         "is_available": product.is_available,
-        "start_from": start_from,
+        "start_from": str(start_from) if start_from is not None else None,
+        "currency": currency,
     }
     
     if advanced:
@@ -63,11 +73,15 @@ def serialize_product_row(product, request, advanced=False):
         
     return data
 
-def serialize_package_row(product, package, request, advanced=False):
-    base_data = serialize_product_row(product, request, advanced)
+def serialize_package_row(product, package, request, advanced=False, currency="USD", service=None):
+    base_data = serialize_product_row(product, request, advanced, currency, service)
     
     # Override price and image for package
-    base_data["price"] = str(package.price) if package.price is not None else None
+    price = package.price
+    if service and currency != "USD" and price is not None:
+        price = round(service.convert(price, currency), 2)
+        
+    base_data["price"] = str(price) if price is not None else None
     
     if package.image:
         package_image_url = _get_image_url(request, package.image)
@@ -90,6 +104,9 @@ def get_search_results(request, advanced=False):
     
     if not search_query and not advanced:
         return []
+        
+    currency = get_user_currency(request)
+    service = CurrencyService()
         
     products = Product.objects.filter(is_active=True).prefetch_related(
         'images', 'category', 'tags', 'topup__packages'
@@ -158,11 +175,11 @@ def get_search_results(request, advanced=False):
                             is_pop_bool = is_pop.lower() in ['true', '1', 'yes']
                             if package.is_popular != is_pop_bool:
                                 continue
-                    results.append(serialize_package_row(product, package, request, advanced))
+                    results.append(serialize_package_row(product, package, request, advanced, currency, service))
             else:
-                results.append(serialize_product_row(product, request, advanced))
+                results.append(serialize_product_row(product, request, advanced, currency, service))
         else:
-            results.append(serialize_product_row(product, request, advanced))
+            results.append(serialize_product_row(product, request, advanced, currency, service))
 
     # Price range filter (applied on built list so topup expanded rows work correctly)
     if advanced:
@@ -210,7 +227,7 @@ def get_search_results(request, advanced=False):
 
 class SimpleSearchView(APIView):
     permission_classes = [AllowAny]
-    authentication_classes = []
+    authentication_classes = [OptionalJWTAuthentication]
     
     def get(self, request, *args, **kwargs):
         results = get_search_results(request, advanced=False)
@@ -228,7 +245,7 @@ class SimpleSearchView(APIView):
 
 class AdvancedSearchView(APIView):
     permission_classes = [AllowAny]
-    authentication_classes = []
+    authentication_classes = [OptionalJWTAuthentication]
     
     def get(self, request, *args, **kwargs):
         results = get_search_results(request, advanced=True)

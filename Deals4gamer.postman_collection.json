@@ -26,7 +26,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"email\": \"kareem147j@gmail.com\",\r\n    \"username\": \"kareem123\",\r\n    \"password\":\"kareem999jj\",\r\n    \"confirm_password\":\"kareem999jj\"\r\n}"
+                  "raw": "{\r\n    \"email\": \"nadaayman444j@gmail.com\",\r\n    \"username\": \"nada\",\r\n    \"password\":\"kareem999jj\",\r\n    \"confirm_password\":\"kareem999jj\"\r\n}"
                 },
                 "url": {
                   "raw": "{{url}}/auth/register/",
@@ -55,12 +55,12 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"email\": \"karim@admin.com\",\r\n    \"password\": \"admin\"\r\n}"
+                  "raw": "// {\r\n//     \"email\": \"karim@admin.com\",\r\n//     \"password\": \"admin\"\r\n// }\r\n{\r\n    \"email\": \"kareem147j@gmail.com\",\r\n    \"password\": \"kareem999jj\"\r\n}"
                 },
                 "url": {
-                  "raw": "{{url}}/auth/login/",
+                  "raw": "{{url2}}/auth/login/",
                   "host": [
-                    "{{url}}"
+                    "{{url2}}"
                   ],
                   "path": [
                     "auth",
@@ -78,7 +78,7 @@
                 "header": [],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"email\":\"kareem147j@gmail.com\",\r\n    \"otp\": 345629\r\n}",
+                  "raw": "{\r\n    \"email\":\"karem147j@gmail.com\",\r\n    \"otp\": 789169\r\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -465,7 +465,7 @@
                     "header": [],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"full_name\": \"karim magdy\",\r\n    \"profile\": {\r\n        \"support_email\": \"karim@admin.com\",\r\n        \"support_whatsapp\": \"+201023681084\"\r\n    },\r\n    \"settings\":{\r\n        \"mode\": \"light\",\r\n        \"language_preference\": \"ar\"\r\n    }\r\n}",
+                      "raw": "{\r\n    \"full_name\": \"karim magdy\",\r\n    \"profile\": {\r\n        // // if admin\r\n        \"support_email\": \"karim@admin.com\",\r\n        \"support_whatsapp\": \"+201023681084\"\r\n        // // if user\r\n        // \"phone\": \"\",\r\n        // \"country\": \"\",\r\n        // \"city\": \"\"\r\n    },\r\n    \"settings\":{\r\n        \"mode\": \"light\", // dark, lisgt\r\n        \"language_preference\": \"ar\", // ar , en\r\n        \"currency\":\"EGP\" // follow down\r\n        // currency choices list you can user it\r\n        // CURRENCIES = [\r\n        //     \"USD\", \"EUR\", \"GBP\", \"EGP\", \"CHF\", \"SEK\", \"NOK\", \"DKK\", \"PLN\", \"CZK\", \"HUF\",\r\n        //     \"RON\", \"CAD\", \"BRL\", \"MXN\", \"ARS\", \"CLP\", \"JPY\", \"KRW\", \"CNY\", \"HKD\", \"TWD\",\r\n        //     \"SGD\", \"MYR\", \"THB\", \"INR\", \"IDR\", \"PHP\", \"VND\", \"SAR\", \"AED\", \"QAR\", \"KWD\",\r\n        //     \"BHD\", \"OMR\", \"TRY\", \"ZAR\", \"NGN\"\r\n        // ]\r\n    }\r\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -483,6 +483,71 @@
                         "my",
                         "profile",
                         "update",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "get-user-currency",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    // this end point admin and user's profile can get it\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/users/user/dc6153e6-4343-4d52-ad4b-958c2dfcea0e/profile/currency/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "users",
+                        "user",
+                        "dc6153e6-4343-4d52-ad4b-958c2dfcea0e",
+                        "profile",
+                        "currency",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "update-user-currency",
+                  "request": {
+                    "method": "PUT",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    // this end point admin and user's profile can get it and update not any user\r\n    \"currency\": \"EUR\" \r\n    // currency choices list you can user it\r\n    // CURRENCIES = [\r\n    //     \"USD\", \"EUR\", \"GBP\", \"EGP\", \"CHF\", \"SEK\", \"NOK\", \"DKK\", \"PLN\", \"CZK\", \"HUF\",\r\n    //     \"RON\", \"CAD\", \"BRL\", \"MXN\", \"ARS\", \"CLP\", \"JPY\", \"KRW\", \"CNY\", \"HKD\", \"TWD\",\r\n    //     \"SGD\", \"MYR\", \"THB\", \"INR\", \"IDR\", \"PHP\", \"VND\", \"SAR\", \"AED\", \"QAR\", \"KWD\",\r\n    //     \"BHD\", \"OMR\", \"TRY\", \"ZAR\", \"NGN\"\r\n    // ]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/users/user/dc6153e6-4343-4d52-ad4b-958c2dfcea0e/profile/currency/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "users",
+                        "user",
+                        "dc6153e6-4343-4d52-ad4b-958c2dfcea0e",
+                        "profile",
+                        "currency",
                         ""
                       ]
                     }
@@ -619,6 +684,28 @@
                     }
                   },
                   "response": []
+                },
+                {
+                  "name": "get-current-user-location",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url2}}/users/user/b44028f0-444d-43a1-8731-1fc1b00c6465/location/current/",
+                      "host": [
+                        "{{url2}}"
+                      ],
+                      "path": [
+                        "users",
+                        "user",
+                        "b44028f0-444d-43a1-8731-1fc1b00c6465",
+                        "location",
+                        "current",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
                 }
               ]
             }
@@ -645,7 +732,7 @@
                   }
                 },
                 "url": {
-                  "raw": "{{url}}/catalog/public/search/simple?search=pub",
+                  "raw": "{{url}}/catalog/public/search/simple?search=mob",
                   "host": [
                     "{{url}}"
                   ],
@@ -658,7 +745,7 @@
                   "query": [
                     {
                       "key": "search",
-                      "value": "pub"
+                      "value": "mob"
                     }
                   ]
                 }
@@ -671,7 +758,7 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{url}}/catalog/public/search/advanced?search=mobile&categories=topup&tags=fight,war&is_popular=true&is_available=true&topups=true&price_min=1&price_max=10&ordering=-price",
+                  "raw": "{{url}}/catalog/public/search/advanced?search=mobile&categories=topup&tags=fight,war&is_popular=true&is_available=true&topups=true&price_min=1&price_max=1000&ordering=-price",
                   "host": [
                     "{{url}}"
                   ],
@@ -711,19 +798,16 @@
                     },
                     {
                       "key": "price_min",
-                      "value": "1",
-                      "type": "text"
+                      "value": "1"
                     },
                     {
                       "key": "price_max",
-                      "value": "10",
-                      "type": "text"
+                      "value": "1000"
                     },
                     {
                       "key": "ordering",
                       "value": "-price",
-                      "description": "value can be -> price or -price",
-                      "type": "text"
+                      "description": "value can be -> price or -price"
                     }
                   ]
                 }
@@ -1463,13 +1547,13 @@
                       }
                     },
                     "url": {
-                      "raw": "{{url}}/catalog/admin/products?filter=is_featured=false,is_popular=true,tags=1,2,region=global&search=mob&page_size=5&page=1&ordering=-price&price_min=1.1&price_max=15",
+                      "raw": "{{url}}/catalog/public/products?filter=is_featured=false,is_popular=true,tags=1,2,region=global&search=mob&page_size=5&page=1&ordering=-price&price_min=1.1&price_max=100",
                       "host": [
                         "{{url}}"
                       ],
                       "path": [
                         "catalog",
-                        "admin",
+                        "public",
                         "products"
                       ],
                       "query": [
@@ -1504,7 +1588,7 @@
                         },
                         {
                           "key": "price_max",
-                          "value": "15"
+                          "value": "100"
                         }
                       ]
                     }
@@ -1517,7 +1601,7 @@
                     "method": "GET",
                     "header": [],
                     "url": {
-                      "raw": "{{url}}/catalog/public/products/mobile-legendes/",
+                      "raw": "{{url}}/catalog/public/products/mobile-legends/",
                       "host": [
                         "{{url}}"
                       ],
@@ -1525,7 +1609,7 @@
                         "catalog",
                         "public",
                         "products",
-                        "mobile-legendes",
+                        "mobile-legends",
                         ""
                       ]
                     }
@@ -2027,13 +2111,13 @@
                       "raw": ""
                     },
                     "url": {
-                      "raw": "{{url}}/topup/admin/topups?search=mobile&price_min=1.2&ordering=price&price_max=9&filter=is_popular=true,is_featured=false",
+                      "raw": "{{url}}/topup/public/topups?search=mobile&price_min=1.2&ordering=price&price_max=100&filter=is_popular=true,is_featured=false",
                       "host": [
                         "{{url}}"
                       ],
                       "path": [
                         "topup",
-                        "admin",
+                        "public",
                         "topups"
                       ],
                       "query": [
@@ -2052,7 +2136,7 @@
                         },
                         {
                           "key": "price_max",
-                          "value": "9"
+                          "value": "100"
                         },
                         {
                           "key": "filter",
@@ -2211,7 +2295,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\r\n    \"product_slug\":\"mobile-legends\",\r\n    \"quantity\":100, // optional -> default = 1\r\n    \"topup_package_id\":1, // if topup else not add this\r\n    \"topup_data\":{ // if topup else not add this\r\n        \"player_id\":\"789879\",\r\n        \"area_zone\":\"5\"\r\n    }\r\n}"
+                  "raw": "{\r\n    \"product_slug\":\"mobile-legends\",\r\n    \"quantity\":120, // optional -> default = 1\r\n    \"topup_package_id\":1, // if topup else not add this\r\n    \"topup_data\":{ // if topup else not add this\r\n        \"player_id\":\"789879\",\r\n        \"area_zone\":\"5\"\r\n    }\r\n}"
                 },
                 "url": {
                   "raw": "{{url}}/cart/items/",
@@ -2338,16 +2422,16 @@
                     ],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"code\":\"karim00000\"\r\n}"
+                      "raw": ""
                     },
                     "url": {
-                      "raw": "{{url}}/coupons/karim00000/",
+                      "raw": "{{url}}/coupons/karim00011/",
                       "host": [
                         "{{url}}"
                       ],
                       "path": [
                         "coupons",
-                        "karim00000",
+                        "karim00011",
                         ""
                       ]
                     }
@@ -2361,7 +2445,7 @@
                     "header": [],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"code\":\"karim00000\"\r\n}",
+                      "raw": "{\r\n    \"code\":\"mobile5\"\r\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -2395,7 +2479,7 @@
                     ],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"code\":\"karimmagdy150\"\r\n}"
+                      "raw": "{\r\n    \"code\":\"mobile5\"\r\n}"
                     },
                     "url": {
                       "raw": "{{url}}/coupons/apply/",
@@ -2412,7 +2496,7 @@
                   "response": []
                 },
                 {
-                  "name": "remove-coupon",
+                  "name": "remove-coupon-from-cart",
                   "request": {
                     "method": "POST",
                     "header": [
@@ -2424,7 +2508,7 @@
                     ],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"code\":\"karim00000\"\r\n}"
+                      "raw": "{\r\n    \"code\":\"mobile5\"\r\n}"
                     },
                     "url": {
                       "raw": "{{url}}/coupons/remove/",
@@ -2772,6 +2856,27 @@
                     }
                   },
                   "response": []
+                },
+                {
+                  "name": "delete-coupon",
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "{{url}}/coupons/admin/coupon/4/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "coupons",
+                        "admin",
+                        "coupon",
+                        "4",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
                 }
               ]
             }
@@ -3042,14 +3147,14 @@
                       "raw": ""
                     },
                     "url": {
-                      "raw": "{{url}}/orders/order/17398226-d3b4-4dab-847d-ef6ed791b439/cancel/",
+                      "raw": "{{url}}/orders/order/af030e27-b941-44b5-886f-6c4399c7fc02/cancel/",
                       "host": [
                         "{{url}}"
                       ],
                       "path": [
                         "orders",
                         "order",
-                        "17398226-d3b4-4dab-847d-ef6ed791b439",
+                        "af030e27-b941-44b5-886f-6c4399c7fc02",
                         "cancel",
                         ""
                       ]
@@ -3064,7 +3169,7 @@
                     "header": [],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \r\n}",
+                      "raw": "",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -3125,7 +3230,7 @@
                     "method": "GET",
                     "header": [],
                     "url": {
-                      "raw": "{{url}}/orders/admin/all?filter=status=pending&search=karim",
+                      "raw": "{{url}}/orders/admin/all",
                       "host": [
                         "{{url}}"
                       ],
@@ -3138,12 +3243,14 @@
                         {
                           "key": "filter",
                           "value": "status=pending",
-                          "description": "you can filter with [\"status\", \"user\", \"total_price\", \"created_at\", \"subtotal\", \"discount_total\", \"coupon_code\"]"
+                          "description": "you can filter with [\"status\", \"user\", \"total_price\", \"created_at\", \"subtotal\", \"discount_total\", \"coupon_code\"]",
+                          "disabled": true
                         },
                         {
                           "key": "search",
                           "value": "karim",
-                          "description": "you can search with (full_name or username or email) of users"
+                          "description": "you can search with (full_name or username or email) of users",
+                          "disabled": true
                         }
                       ]
                     }
@@ -3156,14 +3263,14 @@
                     "method": "GET",
                     "header": [],
                     "url": {
-                      "raw": "{{url}}/orders/admin/a2bda791-885c-4361-bd4e-a814d9f9a449",
+                      "raw": "{{url}}/orders/admin/af030e27-b941-44b5-886f-6c4399c7fc02",
                       "host": [
                         "{{url}}"
                       ],
                       "path": [
                         "orders",
                         "admin",
-                        "a2bda791-885c-4361-bd4e-a814d9f9a449"
+                        "af030e27-b941-44b5-886f-6c4399c7fc02"
                       ]
                     }
                   },
@@ -3579,7 +3686,7 @@
                     "header": [],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"order_id\":\"99a79bcf-4787-4370-abe0-d89b0341b17e\",\r\n    \"gateway_code\":\"paymob_card\"\r\n}",
+                      "raw": "{\r\n    \"order_id\":\"3f239b57-763b-4629-8b95-3cf4eea24324\",\r\n    \"gateway_code\":\"stripe\" // [\"stripe\", \"paymob_card\"]\r\n}",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -3599,12 +3706,211 @@
                     }
                   },
                   "response": []
+                },
+                {
+                  "name": "get-user-payments-list",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    // يقدر يوصل ليها المستخدم صاحب الاوردر او الادمن فقط\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/payments/user/dc6153e6-4343-4d52-ad4b-958c2dfcea0e/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "payments",
+                        "user",
+                        "dc6153e6-4343-4d52-ad4b-958c2dfcea0e",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "get-payments-on-specific-order",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    // يقدر يوصل ليها المستخدم صاحب الاوردر او الادمن فقط\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/payments/order/3f239b57-763b-4629-8b95-3cf4eea24324/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "payments",
+                        "order",
+                        "3f239b57-763b-4629-8b95-3cf4eea24324",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
                 }
               ]
             },
             {
               "name": "admin",
-              "item": []
+              "item": [
+                {
+                  "name": "payments-list",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    // يقدر يوصل ليها المستخدم صاحب الاوردر او الادمن فقط\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/payments/admin/list/?page_size=7&user=karim magdy&status=cancelled&ordering=-amount&ordering=created_at",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "payments",
+                        "admin",
+                        "list",
+                        ""
+                      ],
+                      "query": [
+                        {
+                          "key": "page_size",
+                          "value": "7",
+                          "description": "optional default 10"
+                        },
+                        {
+                          "key": "user",
+                          "value": "karim magdy",
+                          "description": "you can serach with: ['username', 'user_email','full_name']"
+                        },
+                        {
+                          "key": "currency",
+                          "value": "EGP",
+                          "disabled": true
+                        },
+                        {
+                          "key": "country",
+                          "value": "Egypt",
+                          "disabled": true
+                        },
+                        {
+                          "key": "status",
+                          "value": "cancelled",
+                          "description": "pending,cancelled,intended,success,failed,refunded"
+                        },
+                        {
+                          "key": "ordering",
+                          "value": "-amount",
+                          "description": "amount,-amount"
+                        },
+                        {
+                          "key": "ordering",
+                          "value": "created_at",
+                          "description": "created_at,-created_at"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "update-payment-status",
+                  "request": {
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"status\":\"cancelled\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/payments/admin/update-status/33/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "payments",
+                        "admin",
+                        "update-status",
+                        "33",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "payment-details",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": ""
+                    },
+                    "url": {
+                      "raw": "{{url}}/payments/admin/detail/33/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "payments",
+                        "admin",
+                        "detail",
+                        "33",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
             }
           ]
         }
@@ -3617,6 +3923,7 @@
       "script": {
         "type": "text/javascript",
         "packages": {},
+        "requests": {},
         "exec": [
           ""
         ]
@@ -3627,6 +3934,7 @@
       "script": {
         "type": "text/javascript",
         "packages": {},
+        "requests": {},
         "exec": [
           ""
         ]
@@ -3637,6 +3945,14 @@
     {
       "key": "url",
       "value": "http://127.0.0.1:8000/api/v1"
+    },
+    {
+      "key": "url2",
+      "value": ""
+    },
+    {
+      "key": "url3",
+      "value": ""
     }
   ]
 }

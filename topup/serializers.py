@@ -2,6 +2,7 @@ from rest_framework import serializers
 from topup.models import TopUpFieldHelp, TopUpGame, TopUpField, TopUpPackage
 from topup.utils.choices import FieldTypes
 from catalog.serializers import ProductShortDetailSerializerPublic
+from payments.mixins import CurrencySerializerMixin
 
 class TopUpFieldHelpSerializer(serializers.ModelSerializer):
     field = serializers.PrimaryKeyRelatedField(
@@ -35,20 +36,10 @@ class TopUpFieldSerializer(serializers.ModelSerializer):
             "helps",
         ]
         
-class TopUpPackageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TopUpPackage
-        fields = [
-            "id",
-            "name",
-            "amount",
-            "price",
-            "image",
-            "is_active",
-            "order",
-        ]
+# TopUpPackageSerializer defined below at line 87
 
-class TopUpGamePublicSerializer(serializers.ModelSerializer):
+class TopUpGamePublicSerializer(CurrencySerializerMixin, serializers.ModelSerializer):
+    PRICE_FIELDS = ["start_from"]
     product = ProductShortDetailSerializerPublic(read_only=True)
     packages = serializers.SerializerMethodField()
     start_from = serializers.SerializerMethodField()
@@ -71,7 +62,7 @@ class TopUpGamePublicSerializer(serializers.ModelSerializer):
         min_pkg = obj.packages.filter(is_active=True).order_by('price').first()
         return str(min_pkg.price) if min_pkg else None
 
-class TopUpGameDetailPublicSerializer(serializers.ModelSerializer):
+class TopUpGameDetailPublicSerializer(CurrencySerializerMixin, serializers.ModelSerializer):
     product = ProductShortDetailSerializerPublic(read_only=True)
     fields = TopUpFieldSerializer(many=True, read_only=True)
 
@@ -84,7 +75,8 @@ class TopUpGameDetailPublicSerializer(serializers.ModelSerializer):
             "fields",
         ]
 
-class TopUpPackageSerializer(serializers.ModelSerializer):
+class TopUpPackageSerializer(CurrencySerializerMixin, serializers.ModelSerializer):
+    PRICE_FIELDS = ["price"]
     class Meta:
         model = TopUpPackage
         fields = [

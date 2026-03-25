@@ -139,6 +139,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://127.0.0.1:8000",
     "https://formatively-lictorian-thresa.ngrok-free.dev",
+    "http://mysite.local:8000",
+    "https://mysite.local:8000",
 ]
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
@@ -147,6 +149,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:5173",
     "http://127.0.0.1:8000",
     "https://formatively-lictorian-thresa.ngrok-free.dev",
+    "http://mysite.local:8000",
+    "https://mysite.local:8000",
 ]
 
 # REST Framework and JWT settings
@@ -249,7 +253,16 @@ CACHES = {
 
 
 # Payment secrits
+# paymob
 PAYMOB_API_KEY = "ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmpiR0Z6Y3lJNklrMWxjbU5vWVc1MElpd2ljSEp2Wm1sc1pWOXdheUk2TVRBMk1qUTRNU3dpYm1GdFpTSTZJbWx1YVhScFlXd2lmUS5uUXBVLUQxbkFmTE0zcVNqMDFZS1NMMnZpNWtxakl4UUlSdnRxQnNCMmwtOThXSWhTenZyYUlrcWRBR2FjdU5UT21pWU41VUlNTHJkb3RoNXh6aFpqdw=="
 PAYMOB_SECRET_KEY = "egy_sk_test_1397ef5c46c8bd8eebb9c3e6b3cdfa9ee75aa631f4c42572c4d92692e0563b8b"
 PAYMOB_HMAC = "A5DC479DA965EDF71E4DF6F5F8BB05AB"
 PAYMOB_PUBLIC_KEY = "egy_pk_test_SQ33Z3EoEPsh4R31kELGM14y1ToQrpv1"
+# stripe
+STRIPE_SECRET_KEY = "sk_test_51TD7E0JzUxtINKs9nvZ3QPLnnV6nWY14cPAXDWZh80oTQAtBsYa8X2fxvEt3tQA072c67b7aA4klsCAEjy8vLa1h00aSNFR7Ag"
+STRIPE_PUBLIC_KEY = "pk_test_51TD7E0JzUxtINKs9lOfs6kGmTxgkTGJwTWyhaxVVQBvVW8dzsmrYo21OGhy9zepxYXV28qoiOiTuYT2iB7Cof0df00eQcUx6wZ"
+STRIPE_WEBHOOK_SECRET = "whsec_3EbOQ1x4hnAB3gwrMCiWrPzU045HJWic"  # Set this to your webhook signing secret (whsec_...)
+
+
+# currency
+EXCHANGERATE_API_KEY = "e463a12cfb48bf6296ae8d9900200727"

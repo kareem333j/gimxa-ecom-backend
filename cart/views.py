@@ -89,7 +89,7 @@ class CartItemCreateView(APIView):
             
 
         return Response(get_response_schema_1(
-            data=CartSerializer(cart).data,
+            data=CartSerializer(cart, context={"request": request}).data,
             status=201, 
             message="Added to cart"
         ), status=201)
@@ -150,7 +150,7 @@ class CartItemCreateView(APIView):
                 "topup_hash": topup_hash, 
             })
             
-        cart_response = build_cookie_cart_response(cart["items"], cart.get("coupon"))
+        cart_response = build_cookie_cart_response(cart["items"], cart.get("coupon"), request=request)
 
         response = Response(get_response_schema_1(
             data=cart_response,
@@ -190,7 +190,7 @@ class CartDetailView(APIView):
                     ["unit_price", "total_price"]
                 )
 
-            serializer = CartSerializer(cart)
+            serializer = CartSerializer(cart, context={"request": request})
             return Response(get_response_schema_1(
                 data=serializer.data,
                 status=200,
@@ -199,7 +199,7 @@ class CartDetailView(APIView):
         else:
             cart_raw = request.COOKIES.get("cart")
             cart = json.loads(cart_raw) if cart_raw else {"items": []}
-            cart_response = build_cookie_cart_response(cart["items"], cart.get("coupon"))
+            cart_response = build_cookie_cart_response(cart["items"], cart.get("coupon"), request=request)
             return Response(get_response_schema_1(
                 data=cart_response,
                 status=200,
@@ -330,7 +330,7 @@ class CartItemUpdateView(APIView):
 
             return Response(
                 get_response_schema_1(
-                    CartSerializer(cart).data,
+                    CartSerializer(cart, context={"request": request}).data,
                     200,
                     "Cart updated"
                 ),
@@ -389,7 +389,7 @@ class CartItemUpdateView(APIView):
                 )
                 break
 
-        cart_response = build_cookie_cart_response(cart["items"], cart.get("coupon"))
+        cart_response = build_cookie_cart_response(cart["items"], cart.get("coupon"), request=request)
 
         response = Response(
             get_response_schema_1(cart_response, 200, "Cart updated"),
@@ -446,7 +446,7 @@ class CartItemDeleteView(APIView):
 
             return Response(
                 get_response_schema_1(
-                    CartSerializer(cart).data,
+                    CartSerializer(cart, context={"request": request}).data,
                     200,
                     "Item removed successfully"
                 ),
@@ -471,7 +471,7 @@ class CartItemDeleteView(APIView):
             )
         ]
 
-        cart_response = build_cookie_cart_response(cart["items"], cart.get("coupon"))
+        cart_response = build_cookie_cart_response(cart["items"], cart.get("coupon"), request=request)
 
         response = Response(
             get_response_schema_1(

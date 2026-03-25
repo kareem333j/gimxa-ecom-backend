@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from catalog.utils.choices import ProductType
 from rest_framework.validators import UniqueValidator
+from payments.mixins import CurrencySerializerMixin
 
 from catalog.models import (
     Category,
@@ -118,7 +119,9 @@ class ProductAttributeSerializer(serializers.ModelSerializer):
         model = ProductAttribute
         fields = ["id", "name", "value"]
  
-class ProductListSerializer(serializers.ModelSerializer):
+class ProductListSerializer(CurrencySerializerMixin, serializers.ModelSerializer):
+    PRICE_FIELDS = ["price", "start_from"]
+
     main_image = serializers.SerializerMethodField()
     is_topup = serializers.SerializerMethodField()
     start_from = serializers.SerializerMethodField()
@@ -193,7 +196,8 @@ class ProductShortDetailSerializerPublic(serializers.ModelSerializer):
         image = obj.images.filter(is_main=True).first()
         return ProductImageSerializer(image).data if image else None
 
-class ProductDetailSerializerPublic(serializers.ModelSerializer):
+class ProductDetailSerializerPublic(CurrencySerializerMixin, serializers.ModelSerializer):
+    PRICE_FIELDS = ["price", "start_from"]
     images = ProductImageSerializer(many=True, read_only=True)
     attributes = ProductAttributeSerializer(many=True, read_only=True)
     tags = TagSerializerPublic(many=True, read_only=True)

@@ -22,6 +22,9 @@ from catalog.serializers import (
 from core.pagination import DynamicPageNumberPagination
 from django.db.models import Q, Min
 from django.db.models.functions import Coalesce
+from users_auth.authentication import OptionalJWTAuthentication
+from payments.services.currency_service import get_user_currency
+from payments.services.currency_service import CurrencyService
 
 class CategoryListView(APIView):
     permission_classes = [AllowAny]
@@ -96,7 +99,7 @@ class TagListView(APIView):
 
 class ProductListView(APIView):
     permission_classes = [AllowAny]
-    authentication_classes = []
+    authentication_classes = [OptionalJWTAuthentication]
     ALLOWED_FILTERS = {"category", "is_popular", "region", "is_featured", "tags", "product_type", "is_available", "is_topup"}
     ALLOWED_ORDERING = {"price", "-price"}
 
@@ -130,12 +133,15 @@ class ProductListView(APIView):
                 status=400
             ), status=400)
 
+        currency = get_user_currency(request)
+        service = CurrencyService()
+
         cache_key = get_product_list_cache_page_key(
             page_number=page_number,
             page_size=page_size,
             filter_params=','.join([f"{k}={v}" for k, v in filter_dict.items()]) if filter_dict else None,
             search_query=search_query,
-            extra=f"pmin={price_min}&pmax={price_max}&ord={ordering}"
+            extra=f"pmin={price_min}&pmax={price_max}&ord={ordering}&currency={currency}"
         )
 
         data = cache.get(cache_key)
@@ -167,19 +173,22 @@ class ProductListView(APIView):
         if price_min:
             try:
                 price_min_val = float(price_min)
+                # Convert price_min from user currency back to USD for DB filtering
+                price_min_usd = float(service.convert(price_min_val, "USD", from_currency=currency))
                 queryset = queryset.filter(
-                    Q(price__gte=price_min_val) | Q(min_package_price__gte=price_min_val)
+                    Q(price__gte=price_min_usd) | Q(min_package_price__gte=price_min_usd)
                 )
             except ValueError:
                 return Response(get_response_schema_1(
                     message="Invalid price_min value", status=400
                 ), status=400)
-
         if price_max:
             try:
                 price_max_val = float(price_max)
+                # Convert price_max from user currency back to USD for DB filtering
+                price_max_usd = float(service.convert(price_max_val, "USD", from_currency=currency))
                 queryset = queryset.filter(
-                    Q(price__lte=price_max_val) | Q(min_package_price__lte=price_max_val)
+                    Q(price__lte=price_max_usd) | Q(min_package_price__lte=price_max_usd)
                 )
             except ValueError:
                 return Response(get_response_schema_1(
@@ -195,7 +204,7 @@ class ProductListView(APIView):
         # pagination
         page = paginator.paginate_queryset(queryset, request)
 
-        serializer = ProductListSerializer(page, many=True)
+        serializer = ProductListSerializer(page, many=True, context={"request": request})
         data = paginator.get_paginated_response(serializer.data).data
 
         cache.set(cache_key, data, get_product_cache_timeout())
@@ -208,11 +217,12 @@ class ProductListView(APIView):
 
 class ProductDetailView(APIView):
     permission_classes = [AllowAny]
-    authentication_classes = []
+    authentication_classes = [OptionalJWTAuthentication]
 
-    def get(self, _request, slug):
+    def get(self, request, slug):
         try:
-            data = cache.get(get_product_cache_key(slug))
+            cache_key = get_product_cache_key(slug) + f"&currency={get_user_currency(request)}"
+            data = cache.get(cache_key)
             if data:
                 return Response(get_response_schema_1(
                     data=data,
@@ -221,7 +231,7 @@ class ProductDetailView(APIView):
                 ), status=200)
                 
             product = Product.public.prefetch_related('images', 'topup__packages').get(slug=slug)
-            serializer = ProductDetailSerializerPublic(product)
+            serializer = ProductDetailSerializerPublic(product, context={"request": request})
             
             # Cache the product details for future requests
             cache_key = get_product_cache_key(slug)

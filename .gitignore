@@ -13,6 +13,3 @@ venv/
 
 # VS Code
 .vscode/
-
-payments_notes.txt
-paymob_returned_data.json

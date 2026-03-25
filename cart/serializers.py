@@ -2,11 +2,13 @@ from rest_framework import serializers
 from catalog.models import Product
 from catalog.utils.choices import ProductType
 from topup.serializers import TopUpValidateSerializer
-from cart.models import Cart, CartItem    
+from cart.models import Cart, CartItem
+from payments.mixins import CurrencySerializerMixin    
 from django.db.models import Sum
 from decimal import Decimal
         
-class CartItemSerializer(serializers.ModelSerializer):
+class CartItemSerializer(CurrencySerializerMixin, serializers.ModelSerializer):
+    PRICE_FIELDS = ["unit_price", "total_price"]
     product = serializers.SerializerMethodField()
 
     class Meta:
@@ -28,7 +30,8 @@ class CartItemSerializer(serializers.ModelSerializer):
             "is_topup": obj.product.product_type == ProductType.TOPUP,
         }
         
-class CartSerializer(serializers.ModelSerializer):
+class CartSerializer(CurrencySerializerMixin, serializers.ModelSerializer):
+    PRICE_FIELDS = ["subtotal", "discount", "total_after_discount"]
     items = CartItemSerializer(many=True, read_only=True)
     coupon = serializers.SerializerMethodField()
     subtotal = serializers.SerializerMethodField()

@@ -4,14 +4,18 @@ from catalog.models import Product
 from topup.models import TopUpPackage
 import json
 from cart.models import CartItem
+from payments.services.currency_service import CurrencyService, get_user_currency
 
 def get_or_create_cart(user):
     cart, _ = Cart.objects.get_or_create(user=user)
     return cart
 
-def build_cookie_cart_response(items, coupon_code=None):
+def build_cookie_cart_response(items, coupon_code=None, request=None):
     response_items = []
     subtotal = Decimal("0.0000")
+
+    currency = get_user_currency(request)
+    service = CurrencyService()
 
     for item in items:
         try:
@@ -35,10 +39,13 @@ def build_cookie_cart_response(items, coupon_code=None):
         total_price = unit_price * item["quantity"]
         subtotal += total_price
 
+        unit_price_conv = str(round(service.convert(unit_price, currency), 2))
+        total_price_conv = str(round(service.convert(total_price, currency), 2))
+
         response_items.append({
             **item,
-            "unit_price": str(unit_price),
-            "total_price": str(total_price),
+            "unit_price": unit_price_conv,
+            "total_price": total_price_conv,
         })
 
     # Coupon and Discount Calculation
@@ -54,15 +61,20 @@ def build_cookie_cart_response(items, coupon_code=None):
             discount_info = calculate_discount(coupon, cart_items)
             discount = discount_info["total_discount"]
             total_after_discount = max(subtotal - discount, Decimal("0.0000"))
-            coupon_data = get_coupon_summary(coupon)
+            coupon_data = get_coupon_summary(coupon, currency=currency)
+
+    subtotal_conv = str(round(service.convert(subtotal, currency), 2))
+    discount_conv = str(round(service.convert(discount, currency), 2))
+    total_after_discount_conv = str(round(service.convert(total_after_discount, currency), 2))
 
     return {
         "id": None,
         "items": response_items,
         "coupon": coupon_data,
-        "subtotal": str(subtotal),
-        "discount": str(discount),
-        "total_after_discount": str(total_after_discount),
+        "subtotal": subtotal_conv,
+        "discount": discount_conv,
+        "total_after_discount": total_after_discount_conv,
+        "currency": currency,
     }
 
 import hashlib

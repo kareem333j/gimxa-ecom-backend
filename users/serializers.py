@@ -26,6 +26,7 @@ class UserSettingsSerializer(serializers.ModelSerializer):
             "language_preference",
             "mode",
             "location",
+            "currency",
         )
 
 class UserPublicSerializer(serializers.ModelSerializer):

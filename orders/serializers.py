@@ -1,8 +1,10 @@
 from rest_framework import serializers
+from payments.mixins import CurrencySerializerMixin
 
 from orders.models import Order, OrderItem
 
-class OrderItemSerializer(serializers.ModelSerializer):
+class OrderItemSerializer(CurrencySerializerMixin, serializers.ModelSerializer):
+    PRICE_FIELDS = ["price"]
     topup_data = serializers.SerializerMethodField()
 
     class Meta:
@@ -27,7 +29,8 @@ class OrderItemSerializer(serializers.ModelSerializer):
             return topup_entry.fields
         return None
         
-class OrderListSerializer(serializers.ModelSerializer):
+class OrderListSerializer(CurrencySerializerMixin, serializers.ModelSerializer):
+    PRICE_FIELDS = ["total_price", "tax", "discount_total", "subtotal"]
     items_count = serializers.SerializerMethodField()
     payment_details = serializers.SerializerMethodField()
     
@@ -61,9 +64,11 @@ class OrderListSerializer(serializers.ModelSerializer):
             "gateway_name": payment.gateway.name,
             "status": payment.status,
             "amount": payment.amount,
+            "currency": payment.currency,
         }
         
-class OrderDetailSerializer(serializers.ModelSerializer):
+class OrderDetailSerializer(CurrencySerializerMixin, serializers.ModelSerializer):
+    PRICE_FIELDS = ["subtotal", "tax", "discount_total", "total_price"]
     items = OrderItemSerializer(many=True, read_only=True)
     payment_details = serializers.SerializerMethodField()
 
@@ -93,4 +98,5 @@ class OrderDetailSerializer(serializers.ModelSerializer):
             "gateway_name": payment.gateway.name,
             "status": payment.status,
             "amount": payment.amount,
+            "currency": payment.currency,
         }

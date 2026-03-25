@@ -277,7 +277,7 @@ def apply_coupon_to_order(coupon: Coupon, order, user=None) -> CouponUsage:
         return usage
 
 
-def get_coupon_summary(coupon: Coupon) -> Dict:
+def get_coupon_summary(coupon: Coupon, currency: str = "USD") -> Dict:
     """
     Get coupon summary for display
     """
@@ -289,12 +289,20 @@ def get_coupon_summary(coupon: Coupon) -> Dict:
     }
     
     if coupon.scope in [CouponScope.GLOBAL, CouponScope.PRODUCT, CouponScope.CATEGORY, CouponScope.PACKAGE]:
+        from payments.services.currency_service import CurrencyService
+        service = CurrencyService()
+        
+        discount_value = coupon.discount_value
+        if coupon.discount_type == DiscountType.FIXED:
+            discount_value = service.convert(discount_value, currency)
+
         summary["discount_type"] = coupon.discount_type
-        summary["discount_value"] = str(coupon.discount_value)
+        summary["discount_value"] = str(round(discount_value, 4))
+        
         if coupon.discount_type == DiscountType.PERCENT:
             summary["discount_text"] = f"{coupon.discount_value}%"
         else:
-            summary["discount_text"] = f"{coupon.discount_value} $"
+            summary["discount_text"] = f"{summary['discount_value']} {currency}"
     else:
         summary["discount_type"] = "variable"
         summary["discount_text"] = "variable discount based on product/category/package"
