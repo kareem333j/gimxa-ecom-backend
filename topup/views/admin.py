@@ -26,7 +26,7 @@ from cache.utils import (
 )
 from core.pagination import DynamicPageNumberPagination
 from django.db.models import Min
-
+from rest_framework import status
 
 
 def delete_all_caches(product_slug):
@@ -217,7 +217,7 @@ class TopUpGameDetailAdminView(APIView):
             return Response(get_response_schema_1(error="TopUp not found", status=404), status=404)
         topup.delete()
         delete_all_caches(product_slug)
-        return Response(get_response_schema_1(data=None, message="TopUp deleted successfully", status=204), status=204)
+        return Response(get_response_schema_1(data=None, message="TopUp deleted successfully", status=200), status=status.HTTP_200_OK)
 
 class TopUpFieldAdminListView(APIView):
     permission_classes = [AdminPermission]
@@ -277,9 +277,9 @@ class TopUpFieldAdminListView(APIView):
             get_response_schema_1(
                 data=None,
                 message="TopUp fields deleted successfully",
-                status=204
+                status=200
             ),
-            status=204
+            status=status.HTTP_200_OK
         )
 
 class TopUpFieldAdminDetailView(APIView):
@@ -310,7 +310,7 @@ class TopUpFieldAdminDetailView(APIView):
         product_slug = field.game.product.slug
         delete_all_caches(product_slug)
         
-        return Response(get_response_schema_1(data=None, message="TopUp field deleted successfully", status=204), status=204)
+        return Response(get_response_schema_1(data=None, message="TopUp field deleted successfully", status=200), status=status.HTTP_200_OK)
 
 class TopUpFieldHelpAdminView(APIView):
     permission_classes = [AdminPermission]
@@ -352,7 +352,7 @@ class TopUpFieldHelpAdminDetailView(APIView):
         product_slug = help.field.game.product.slug
         delete_all_caches(product_slug)
         
-        return Response(get_response_schema_1(data=None, message="TopUp field help deleted successfully", status=204), status=204)
+        return Response(get_response_schema_1(data=None, message="TopUp field help deleted successfully", status=200), status=status.HTTP_200_OK)
 
 class TopUpPackageAdminView(APIView):
     permission_classes = [AdminPermission]
@@ -434,4 +434,4 @@ class TopUpPackageDetailAdminView(APIView):
         package = TopUpPackage.objects.get(pk=pk)
         package.delete()
         delete_all_caches(package.game.product.slug)
-        return Response(get_response_schema_1(data=None, message="TopUp package deleted successfully", status=204), status=204)
+        return Response(get_response_schema_1(data=None, message="TopUp package deleted successfully", status=200), status=status.HTTP_200_OK)

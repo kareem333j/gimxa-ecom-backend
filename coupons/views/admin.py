@@ -14,6 +14,7 @@ from coupons.serializers import (
 )
 from permissions.custom import AdminPermission
 from users_auth.authentication import CookieJWTAuthentication
+from rest_framework import status
 
 
 class AdminCouponListCreateView(APIView):
@@ -115,8 +116,8 @@ class AdminCouponDetailView(APIView):
         
         coupon.delete()
         return Response(
-            get_response_schema_1({}, 204, "coupon deleted successfully"),
-            status=204
+            get_response_schema_1({}, 200, "coupon deleted successfully"),
+            status=status.HTTP_200_OK
         )
 
 
@@ -167,8 +168,8 @@ class AdminCouponProductView(APIView):
         
         coupon_product.delete()
         return Response(
-            get_response_schema_1({}, 204, "product removed from coupon successfully"),
-            status=204
+            get_response_schema_1({}, 200, "product removed from coupon successfully"),
+            status=status.HTTP_200_OK
         )
 
 
@@ -219,8 +220,8 @@ class AdminCouponCategoryView(APIView):
         
         coupon_category.delete()
         return Response(
-            get_response_schema_1({}, 204, "category removed from coupon successfully"),
-            status=204
+            get_response_schema_1({}, 200, "category removed from coupon successfully"),
+            status=status.HTTP_200_OK
         )
 
 
@@ -298,6 +299,6 @@ class AdminCouponPackageView(APIView):
         
         coupon_package.delete()
         return Response(
-            get_response_schema_1({}, 204, "package removed from coupon successfully"),
-            status=204
+            get_response_schema_1({}, 200, "package removed from coupon successfully"),
+            status=status.HTTP_200_OK
         )

@@ -11,6 +11,7 @@ import json
 from cart.utils.helpers import build_cookie_cart_response
 from django.db import transaction
 from users_auth.authentication import OptionalJWTAuthentication
+from rest_framework import status
 
 
 class CartItemCreateView(APIView):
@@ -213,15 +214,15 @@ class CartDetailView(APIView):
             cart.delete()
             return Response(get_response_schema_1(
                 data={},
-                status=204,
+                status=200,
                 message="Cart cleared successfully"
-            ), status=204)
+            ), status=status.HTTP_200_OK)
         else:
             response = Response(get_response_schema_1(
                 data={},
-                status=204,
+                status=200,
                 message="Cart cleared successfully"
-            ), status=204)
+            ), status=status.HTTP_200_OK)
             response.delete_cookie("cart")
             return response
         

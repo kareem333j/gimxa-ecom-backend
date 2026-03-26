@@ -105,10 +105,10 @@ class NotificationDetailView(APIView):
         return Response(
             get_response_schema_1(
                 data=None,
-                status=status.HTTP_204_NO_CONTENT,
+                status=200,
                 message="Notification deleted successfully"
             ),
-            status=status.HTTP_204_NO_CONTENT
+            status=status.HTTP_200_OK
         )
 
 class NotificationDeleteView(APIView):
@@ -121,8 +121,8 @@ class NotificationDeleteView(APIView):
         return Response(
             get_response_schema_1(
                 data=None,
-                status=status.HTTP_204_NO_CONTENT,
+                status=200,
                 message="Notifications deleted successfully"
             ),
-            status=status.HTTP_204_NO_CONTENT
+            status=status.HTTP_200_OK
         )

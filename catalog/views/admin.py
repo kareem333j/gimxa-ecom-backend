@@ -28,6 +28,7 @@ from cache.utils import (
 from django.db.models import Q, Min
 from django.db.models.functions import Coalesce
 from core.pagination import DynamicPageNumberPagination
+from rest_framework import status
 
 class CategoryAdminView(APIView):
     permission_classes = [AdminPermission]
@@ -113,9 +114,9 @@ class CategoryAdminDetailView(APIView):
             cache.delete(get_category_cache_key(slug))
             return Response(get_response_schema_1(
                 data=None,
-                status=204,
+                status=200,
                 message="Category deleted successfully"
-            ), status=204)
+            ), status=status.HTTP_200_OK)
         except Category.DoesNotExist:
             return Response(get_response_schema_1(message="Category not found", status=404), status=404)
         
@@ -201,9 +202,9 @@ class TagAdminDetailView(APIView):
             cache.delete("all_tags")
             return Response(get_response_schema_1(
                 data=None,
-                status=204,
+                status=200,
                 message="Tag deleted successfully"
-            ), status=204)
+            ), status=status.HTTP_200_OK)
         except Tag.DoesNotExist:
             return Response(get_response_schema_1(message="Tag not found", status=404), status=404)
         
@@ -378,9 +379,9 @@ class ProductDetailAdminView(APIView):
             cache.delete(get_product_cache_key(product.slug))
             return Response(get_response_schema_1(
                 data=None,
-                status=204,
+                status=200,
                 message="Product deleted successfully"
-            ), status=204)
+            ), status=status.HTTP_200_OK)
         except Product.DoesNotExist:
             return Response(get_response_schema_1(message="Product not found", status=404), status=404)
 
@@ -446,9 +447,9 @@ class ProductImageAdminView(APIView):
             cache.delete(get_product_cache_key(product.slug))
             return Response(get_response_schema_1(
                 data=None,
-                status=204,
+                status=200,
                 message="Product image deleted successfully"
-            ), status=204)
+            ), status=status.HTTP_200_OK)
         except ProductImage.DoesNotExist:
             return Response(get_response_schema_1(message="Product image not found", status=404), status=404)
 
@@ -514,8 +515,8 @@ class ProductAttributeAdminView(APIView):
             cache.delete(get_product_cache_key(product.slug))
             return Response(get_response_schema_1(
                 data=None,
-                status=204,
+                status=200,
                 message="Product attribute deleted successfully"
-            ), status=204)
+            ), status=status.HTTP_200_OK)
         except ProductAttribute.DoesNotExist:
             return Response(get_response_schema_1(message="Product attribute not found", status=404), status=404)
