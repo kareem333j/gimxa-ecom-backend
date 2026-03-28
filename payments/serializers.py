@@ -7,6 +7,11 @@ class PaymentGatewaySerializer(serializers.ModelSerializer):
         model = PaymentGateway
         fields = ['id', 'name', 'tax_rate', 'description', 'icon']
 
+class AdminPaymentGatewaySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PaymentGateway
+        fields = ['id', 'name', 'tax_rate', 'description', 'icon', 'is_active', "created_at", "updated_at"]
+
 class PaymentSerializer(serializers.ModelSerializer):
     user = serializers.IntegerField(source='order.user.id', read_only=True)
     gateway_name = serializers.CharField(source='gateway.name', read_only=True)

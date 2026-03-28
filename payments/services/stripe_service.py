@@ -106,6 +106,7 @@ class StripeService:
         }
 
         try:
+            logger.info(f"Stripe: Creating Checkout Session for order {order.order_number} with amount {final_amount_cents} {currency}")
             session = stripe.checkout.Session.create(
                 payment_method_types=['card'],
                 line_items=[{
@@ -119,11 +120,15 @@ class StripeService:
                     'quantity': 1,
                 }],
                 mode='payment',
+                payment_intent_data={
+                    'metadata': metadata
+                },
                 metadata=metadata,
                 customer_email=user.email,
-                success_url="https://example.com/success",
-                cancel_url="https://example.com/cancel",
+                success_url=settings.SUCCESS_URL,
+                cancel_url=settings.CANCEL_URL,
             )
+            logger.info(f"Stripe: Session created successfully: {session.id}")
             return {
                 "success": True,
                 "client_secret": None,

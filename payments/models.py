@@ -1,3 +1,4 @@
+from http.client import PROCESSING
 from django.db import models
 
 class PaymentGateway(models.Model):
@@ -31,6 +32,7 @@ class Payment(models.Model):
         FAILED = "failed", "Failed"
         REFUNDED = "refunded", "Refunded"
         CANCELLED = "cancelled", "Cancelled"
+        PROCESSING = "processing", "Processing"
 
     order = models.ForeignKey(
         "orders.Order",

@@ -53,7 +53,9 @@ class CartSerializer(CurrencySerializerMixin, serializers.ModelSerializer):
         if not obj.coupon:
             return None
         from coupons.services.coupon_service import get_coupon_summary
-        return get_coupon_summary(obj.coupon)
+        currency = self.get_currency(obj)
+        cart_items = list(obj.items.select_related("product").all())
+        return get_coupon_summary(obj.coupon, currency=currency, cart_items=cart_items)
 
     def get_subtotal(self, obj):
         return obj.items.aggregate(total=Sum("total_price"))["total"] or 0

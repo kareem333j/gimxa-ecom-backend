@@ -131,7 +131,7 @@ def calculate_item_discount(
     if discount_type == DiscountType.PERCENT:
         discount = item_total * (discount_value / Decimal("100"))
     else:  # FIXED
-        discount = min(discount_value * item.quantity, item_total)
+        discount = min(discount_value, item_total)
     
     return discount.quantize(Decimal("0.0001"))
 
@@ -277,34 +277,114 @@ def apply_coupon_to_order(coupon: Coupon, order, user=None) -> CouponUsage:
         return usage
 
 
-def get_coupon_summary(coupon: Coupon, currency: str = "USD") -> Dict:
+def get_coupon_summary(coupon: Coupon, currency: str = "USD", cart_items=None) -> Dict:
     """
-    Get coupon summary for display
+    Get coupon summary for display.
+    Pass cart_items to show the specific discount applicable to the cart.
     """
+    from payments.services.currency_service import CurrencyService
+    service = CurrencyService()
+
     summary = {
         "code": coupon.code,
         "scope": coupon.scope,
         "scope_display": coupon.get_scope_display(),
         "is_valid": coupon.is_valid(),
     }
-    
-    if coupon.scope in [CouponScope.GLOBAL, CouponScope.PRODUCT, CouponScope.CATEGORY, CouponScope.PACKAGE]:
-        from payments.services.currency_service import CurrencyService
-        service = CurrencyService()
-        
-        discount_value = coupon.discount_value
-        if coupon.discount_type == DiscountType.FIXED:
-            discount_value = service.convert(discount_value, currency)
 
-        summary["discount_type"] = coupon.discount_type
+    if coupon.scope == CouponScope.GLOBAL:
+        discount_type = coupon.discount_type
+        discount_value = coupon.discount_value
+        if discount_type == DiscountType.FIXED:
+            discount_value = service.convert(discount_value, currency)
+        summary["discount_type"] = discount_type
         summary["discount_value"] = str(round(discount_value, 4))
-        
-        if coupon.discount_type == DiscountType.PERCENT:
+        if discount_type == DiscountType.PERCENT:
             summary["discount_text"] = f"{coupon.discount_value}%"
         else:
             summary["discount_text"] = f"{summary['discount_value']} {currency}"
+
+    elif coupon.scope == CouponScope.PACKAGE:
+        package_discounts = {pd.package_id: pd for pd in coupon.package_discounts.all()}
+
+        # Filter to packages that are actually in the cart (if cart_items provided)
+        if cart_items is not None:
+            cart_package_ids = [
+                getattr(item, "topup_package_id", None)
+                for item in cart_items
+            ]
+            applicable_pds = [
+                package_discounts[pid]
+                for pid in cart_package_ids
+                if pid in package_discounts
+            ]
+        else:
+            applicable_pds = list(package_discounts.values())
+
+        if applicable_pds:
+            first = applicable_pds[0]
+            all_same = all(
+                pd.discount_type == first.discount_type and pd.discount_value == first.discount_value
+                for pd in applicable_pds
+            )
+            if all_same:
+                dv = first.discount_value
+                if first.discount_type == DiscountType.FIXED:
+                    dv = service.convert(dv, currency)
+                summary["discount_type"] = first.discount_type
+                summary["discount_value"] = str(round(dv, 4))
+                if first.discount_type == DiscountType.PERCENT:
+                    summary["discount_text"] = f"{first.discount_value}%"
+                else:
+                    summary["discount_text"] = f"{summary['discount_value']} {currency}"
+            else:
+                summary["discount_type"] = "variable"
+                summary["discount_value"] = None
+                summary["discount_text"] = "variable discount per package"
+        else:
+            summary["discount_type"] = "variable"
+            summary["discount_value"] = None
+            summary["discount_text"] = "variable discount per package"
+
+    elif coupon.scope == CouponScope.PRODUCT:
+        product_discounts = list(coupon.product_discounts.all())
+        if len(product_discounts) == 1:
+            pd = product_discounts[0]
+            dv = pd.discount_value
+            if pd.discount_type == DiscountType.FIXED:
+                dv = service.convert(dv, currency)
+            summary["discount_type"] = pd.discount_type
+            summary["discount_value"] = str(round(dv, 4))
+            if pd.discount_type == DiscountType.PERCENT:
+                summary["discount_text"] = f"{pd.discount_value}%"
+            else:
+                summary["discount_text"] = f"{summary['discount_value']} {currency}"
+        else:
+            summary["discount_type"] = "variable"
+            summary["discount_value"] = None
+            summary["discount_text"] = "variable discount per product"
+
+    elif coupon.scope == CouponScope.CATEGORY:
+        category_discounts = list(coupon.category_discounts.all())
+        if len(category_discounts) == 1:
+            cd = category_discounts[0]
+            dv = cd.discount_value
+            if cd.discount_type == DiscountType.FIXED:
+                dv = service.convert(dv, currency)
+            summary["discount_type"] = cd.discount_type
+            summary["discount_value"] = str(round(dv, 4))
+            if cd.discount_type == DiscountType.PERCENT:
+                summary["discount_text"] = f"{cd.discount_value}%"
+            else:
+                summary["discount_text"] = f"{summary['discount_value']} {currency}"
+        else:
+            summary["discount_type"] = "variable"
+            summary["discount_value"] = None
+            summary["discount_text"] = "variable discount per category"
+
     else:
         summary["discount_type"] = "variable"
-        summary["discount_text"] = "variable discount based on product/category/package"
-    
+        summary["discount_value"] = None
+        summary["discount_text"] = "variable discount"
+
     return summary

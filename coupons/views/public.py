@@ -46,7 +46,7 @@ class ValidateCouponView(APIView):
 
         discount_info = calculate_discount(coupon, cart_items)
         currency = get_user_currency(request)
-        coupon_summary = get_coupon_summary(coupon, currency=currency)
+        coupon_summary = get_coupon_summary(coupon, currency=currency, cart_items=cart_items)
 
         currency = get_user_currency(request)
         service = CurrencyService()
@@ -125,7 +125,7 @@ class ApplyCouponView(APIView):
         total_after_discount = subtotal - discount_info["total_discount"]
 
         currency = get_user_currency(request)
-        coupon_summary = get_coupon_summary(coupon, currency=currency)
+        coupon_summary = get_coupon_summary(coupon, currency=currency, cart_items=cart_items)
 
         currency = get_user_currency(request)
         service = CurrencyService()

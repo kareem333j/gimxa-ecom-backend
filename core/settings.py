@@ -244,7 +244,7 @@ CACHES = {
 # CACHES = {
 #     "default": {
 #         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": "redis://127.0.0.1:6379/1",  # عدل حسب إعدادات سيرفرك
+#         "LOCATION": "redis://127.0.0.1:6379/1",
 #         "OPTIONS": {
 #             "CLIENT_CLASS": "django_redis.client.DefaultClient",
 #         }
@@ -253,6 +253,8 @@ CACHES = {
 
 
 # Payment secrits
+SUCCESS_URL = "http://localhost:8000/success"
+CANCEL_URL = "http://localhost:8000/cancel"
 # paymob
 PAYMOB_API_KEY = "ZXlKaGJHY2lPaUpJVXpVeE1pSXNJblI1Y0NJNklrcFhWQ0o5LmV5SmpiR0Z6Y3lJNklrMWxjbU5vWVc1MElpd2ljSEp2Wm1sc1pWOXdheUk2TVRBMk1qUTRNU3dpYm1GdFpTSTZJbWx1YVhScFlXd2lmUS5uUXBVLUQxbkFmTE0zcVNqMDFZS1NMMnZpNWtxakl4UUlSdnRxQnNCMmwtOThXSWhTenZyYUlrcWRBR2FjdU5UT21pWU41VUlNTHJkb3RoNXh6aFpqdw=="
 PAYMOB_SECRET_KEY = "egy_sk_test_1397ef5c46c8bd8eebb9c3e6b3cdfa9ee75aa631f4c42572c4d92692e0563b8b"
@@ -261,7 +263,7 @@ PAYMOB_PUBLIC_KEY = "egy_pk_test_SQ33Z3EoEPsh4R31kELGM14y1ToQrpv1"
 # stripe
 STRIPE_SECRET_KEY = "sk_test_51TD7E0JzUxtINKs9nvZ3QPLnnV6nWY14cPAXDWZh80oTQAtBsYa8X2fxvEt3tQA072c67b7aA4klsCAEjy8vLa1h00aSNFR7Ag"
 STRIPE_PUBLIC_KEY = "pk_test_51TD7E0JzUxtINKs9lOfs6kGmTxgkTGJwTWyhaxVVQBvVW8dzsmrYo21OGhy9zepxYXV28qoiOiTuYT2iB7Cof0df00eQcUx6wZ"
-STRIPE_WEBHOOK_SECRET = "whsec_3EbOQ1x4hnAB3gwrMCiWrPzU045HJWic"  # Set this to your webhook signing secret (whsec_...)
+STRIPE_WEBHOOK_SECRET = "whsec_3EbOQ1x4hnAB3gwrMCiWrPzU045HJWic"
 
 
 # currency

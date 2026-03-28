@@ -20,8 +20,7 @@ from users.models import UserActivityLog
 from permissions.custom import IsOwnerOrAdmin
 from .serializers import (
     PaymentGatewaySerializer, PaymentSerializer, 
-    AdminPaymentSerializer, AdminPaymentSimpleSerializer,
-    AdminPaymentDetailSerializer
+    AdminPaymentSimpleSerializer,AdminPaymentDetailSerializer, AdminPaymentGatewaySerializer
 )
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
@@ -62,6 +61,10 @@ def init_payment(request):
         order = Order.objects.get(order_number=order_id)
     except Order.DoesNotExist:
         return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    is_admin = getattr(request.user, "role", None) == "admin"
+    if order.user != request.user and not (request.user.is_staff or is_admin):
+        return Response({"error": "Access denied. Only the owner of this order can complete the payment."}, status=status.HTTP_403_FORBIDDEN)
 
     try:
         gateway = PaymentGateway.objects.get(gateway_code=gateway_code)
@@ -277,26 +280,70 @@ def payment_webhook(request):
         payment_intent_id = getattr(data_obj, "id", None) if not isinstance(data_obj, dict) else data_obj.get("id")
 
         if not payment_intent_id:
+            logger.error(f"Stripe: Missing payment_intent or session ID in event {event_type}")
             return Response({"error": "Missing payment_intent id"}, status=400)
 
         try:
             with transaction.atomic():
-                payment = Payment.objects.select_for_update().get(
+                # Try to find the payment by ID (Session ID or PaymentIntent ID)
+                payment = Payment.objects.select_for_update().filter(
                     payment_intent_id=payment_intent_id
-                )
+                ).first()
 
+                if payment:
+                    logger.info(f"Stripe: Found payment {payment.id} by ID {payment_intent_id}")
+                else:
+                    # Fallback 1: Find by metadata if ID lookup fails
+                    metadata = data_obj.get("metadata", {}) if isinstance(data_obj, dict) else getattr(data_obj, "metadata", {})
+                    order_number = metadata.get("order_number")
+                    if order_number:
+                        payment = Payment.objects.select_for_update().filter(
+                            order__order_number=order_number,
+                            gateway__gateway_type="stripe"
+                        ).order_by("-created_at").first()
+                        
+                        if payment:
+                            logger.info(f"Stripe: Found payment {payment.id} for order {order_number} via metadata fallback (event ID: {payment_intent_id})")
+                    
+                    # Fallback 2: Look in payment_details.order_reference (Checkout Session ID)
+                    if not payment:
+                        payment_details = data_obj.get("payment_details", {}) if isinstance(data_obj, dict) else getattr(data_obj, "payment_details", {})
+                        if payment_details:
+                            session_id = payment_details.get("order_reference")
+                            if session_id:
+                                payment = Payment.objects.select_for_update().filter(
+                                    payment_intent_id=session_id
+                                ).first()
+                                if payment:
+                                    logger.info(f"Stripe: Found payment {payment.id} via order_reference fallback ({session_id})")
+
+                if not payment:
+                    logger.error(f"Stripe: Payment with ID {payment_intent_id} not found even with fallbacks. Metadata: {metadata}")
+                    return Response(status=200) # Still 200 to satisfy Stripe
+
+                logger.info(f"Stripe: Processing event {event_type} for payment {payment.id} (status: {payment.status})")
                 if payment.status == "success":
+                    logger.info(f"Stripe: Payment {payment.id} already marked as success. Skipping.")
                     return Response(status=200)
 
                 payment.raw_response = data_obj
 
                 # Handle both PaymentIntent and Session events
-                if event_type in ("payment_intent.succeeded", "checkout.session.completed"):
+                if event_type in ("payment_intent.succeeded"):
                     # For checkout session, ensure payment is successful before marking as paid
                     payment_status = getattr(data_obj, "payment_status", None) if not isinstance(data_obj, dict) else data_obj.get("payment_status")
-                    if event_type == "checkout.session.completed" and payment_status != "paid":
-                        # If payment status is not paid, wait for payment_intent.succeeded or ignore
-                        return Response(status=200)
+                    
+                    if event_type == "checkout.session.completed":
+                        # If we found it by Session ID, update it with the actual PaymentIntent ID for future events
+                        actual_pi = getattr(data_obj, "payment_intent", None) if not isinstance(data_obj, dict) else data_obj.get("payment_intent")
+                        if actual_pi and payment.payment_intent_id != actual_pi:
+                            payment.payment_intent_id = actual_pi
+                            logger.info(f"Stripe: Updated Payment {payment.id} with actual PaymentIntent ID {actual_pi}")
+
+                        if payment_status != "paid":
+                            # If payment status is not paid, wait for payment_intent.succeeded or ignore
+                            payment.save()
+                            return Response(status=200)
 
                     payment.status = "success"
                     
@@ -304,14 +351,22 @@ def payment_webhook(request):
                     latest_charge = getattr(data_obj, "latest_charge", None) if not isinstance(data_obj, dict) else data_obj.get("latest_charge")
                     intent_id = getattr(data_obj, "payment_intent", None) if not isinstance(data_obj, dict) else data_obj.get("payment_intent")
                     
-                    # payment.transaction_id = data_obj.get("latest_charge") or str(payment_intent_id)
                     payment.transaction_id = latest_charge or intent_id or str(payment_intent_id)
-                    payment.order.status = OrderStatus.PAID
-                    payment.order.save()
+                    
+                    # Update order status explicitly
+                    order = payment.order
+                    order.status = OrderStatus.PAID
+                    order.save()
+                    logger.info(f"Stripe: Order {order.order_number} status updated to {order.status}")
+
+                    # Mark payment as success and save
+                    payment.status = "success"
+                    payment.save()
+                    logger.info(f"Stripe: Payment {payment.id} marked as success")
 
                     # Log Stripe success
                     log_user_activity(
-                        user=payment.order.user,
+                        user=order.user,
                         activity_type=UserActivityLog.ActivityType.PAYMENT_SUCCESS,
                         request=request,
                         metadata={
@@ -319,13 +374,12 @@ def payment_webhook(request):
                                 "gateway": "stripe",
                                 "transaction_id": payment.transaction_id,
                                 "amount": str(payment.amount),
-                                "order_number": str(payment.order.order_number),
+                                "order_number": str(order.order_number),
                             }
                         }
                     )
 
-                # elif event_type in ("payment_intent.payment_failed", "payment_intent.canceled"):
-                elif event_type in ("payment_intent.payment_failed", "payment_intent.canceled", "checkout.session.expired"):
+                elif event_type in ("payment_intent.payment_failed", "payment_intent.canceled", "checkout.session.expired", "payment_intent.requires_payment_method"):
                     payment.status = "failed"
                     payment.order.status = OrderStatus.FAILED
                     payment.order.save()
@@ -334,6 +388,25 @@ def payment_webhook(request):
                     log_user_activity(
                         user=payment.order.user,
                         activity_type=UserActivityLog.ActivityType.PAYMENT_FAIL,
+                        request=request,
+                        metadata={
+                            "payment": {
+                                "gateway": "stripe",
+                                "event_type": event_type,
+                                "order_number": str(payment.order.order_number),
+                            }
+                        }
+                    )
+                
+                elif event_type in ("payment_intent.processing", "checkout.session.async_payment_succeeded"):
+                    payment.status = "processing"
+                    payment.order.status = OrderStatus.PROCESSING
+                    payment.order.save()
+
+                    # Log Stripe processing
+                    log_user_activity(
+                        user=payment.order.user,
+                        activity_type=UserActivityLog.ActivityType.PAYMENT_PROCESSING,
                         request=request,
                         metadata={
                             "payment": {
@@ -416,6 +489,12 @@ class OrderPaymentListView(APIView):
 #  Admin Views                                                       #
 # ------------------------------------------------------------------ #
 
+class AdminPaymentGatewayListView(generics.ListAPIView):
+    queryset = PaymentGateway.objects.all().order_by("id")
+    serializer_class = AdminPaymentGatewaySerializer
+    permission_classes = [AdminPermission]
+    authentication_classes = [CookieJWTAuthentication]
+
 class AdminPaymentListView(APIView):
     permission_classes = [AdminPermission]
     authentication_classes = [CookieJWTAuthentication]
@@ -443,6 +522,10 @@ class AdminPaymentListView(APIView):
         status_filter = request.query_params.get("status")
         if status_filter:
             queryset = queryset.filter(status=status_filter)
+
+        gateway_filter = request.query_params.get("gateway")
+        if gateway_filter:
+            queryset = queryset.filter(gateway__name__iexact=gateway_filter)
 
         # Ordering
         ordering = request.query_params.get("ordering")

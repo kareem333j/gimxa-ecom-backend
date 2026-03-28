@@ -3,11 +3,12 @@ from payments.views import (
     PaymentGatewayListView, payment_webhook, init_payment, 
     UserPaymentListView, OrderPaymentListView,
     AdminPaymentListView, AdminPaymentStatusUpdateView,
-    AdminPaymentDetailView
+    AdminPaymentDetailView, AdminPaymentGatewayListView
 )
 
 urlpatterns = [
     path('gateways/', PaymentGatewayListView.as_view(), name='payment-gateway-list'),
+    path('admin/gateways/', AdminPaymentGatewayListView.as_view(), name='admin-payment-gateway-list'),
 
     # Unified init endpoint — works for both Paymob and Stripe
     path('init-payment/', init_payment, name='init-payment'),
