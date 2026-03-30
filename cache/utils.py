@@ -84,13 +84,14 @@ def get_packages_cache_timeout():
     return PACKAGE_CACHE_TIMEOUT
 
 def get_topup_package_list_cache_page_key(
+    product_slug,
     page_number,
     page_size,
     ordering=None,
     currency="USD",
     is_admin=False
 ):
-    key = f"{TOPUP_GAME_PACKAGE_LIST_CACHE_KEY_PREFIX if not is_admin else TOPUP_GAME_PACKAGE_LIST_ADMIN_CACHE_KEY_PREFIX}{page_number}_size_{page_size}"
+    key = f"{TOPUP_GAME_PACKAGE_LIST_CACHE_KEY_PREFIX if not is_admin else TOPUP_GAME_PACKAGE_LIST_ADMIN_CACHE_KEY_PREFIX}_for_{product_slug}_{page_number}_size_{page_size}"
     if ordering:
         key += f"_ordering_{ordering}"
     if currency:

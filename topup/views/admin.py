@@ -386,6 +386,7 @@ class TopUpPackageListAdminView(APIView):
         page_size = paginator.get_page_size(request)
 
         cache_key = get_topup_package_list_cache_page_key(
+            product_slug=product_slug,
             page_number=page_number,
             page_size=page_size,
             ordering=ordering,
